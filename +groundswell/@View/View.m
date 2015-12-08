@@ -92,13 +92,13 @@ classdef View < handle
       self.controller=controller;
       self.model=[];
       
-      % get the screen size so we can position the figure window
-      root_units=get(0,'Units');
-      set(0,'Units','pixels');
-      screen_dims=get(0,'ScreenSize');
-      screen_width=screen_dims(3);
-      screen_height=screen_dims(4); 
-      set(0,'Units',root_units);
+%       % get the screen size so we can position the figure window
+%       root_units=get(0,'Units');
+%       set(0,'Units','pixels');
+%       screen_dims=get(0,'ScreenSize');
+%       screen_width=screen_dims(3);
+%       screen_height=screen_dims(4); 
+%       set(0,'Units',root_units);
 
 
 
@@ -111,35 +111,39 @@ classdef View < handle
 %       figure_height_min=500;
             
       % layout of the figure on the screen
-      screen_left_pad_size=60;
-      screen_right_pad_size=60;
-      screen_top_pad_size=60;
-      screen_bottom_pad_size=60;
+      screen_left_pad_size = 20 ;
+      screen_right_pad_size = 20 ;
+      screen_top_pad_size = 20 ;
+      screen_bottom_pad_size = 20 ;
 
       % the figure
-      figure_width=screen_width-screen_left_pad_size-screen_right_pad_size;
-      figure_height=screen_height-screen_top_pad_size-screen_bottom_pad_size;
+      %figure_width=screen_width-screen_left_pad_size-screen_right_pad_size;
+      %figure_height=screen_height-screen_top_pad_size-screen_bottom_pad_size;
 
       % pick the figure BG color based on the platform
       % except that for now, all platforms are the same
       %clr=0.8*ones(1,3);  % gray
       
       %
-      % make the figure
+      % make the figure, but make it invisible until we set the size
       %
       self.fig_h = ...
         figure('Tag','groundswell_figure_h',...
-               'Position',[screen_left_pad_size,...
-                           screen_bottom_pad_size,...
-                           figure_width,figure_height],...
                'Name','Groundswell',...
                'NumberTitle','off',...
                'MenuBar','none',...
+               'DockControls','off', ...
                'PaperPositionMode','auto',...
                'Renderer','zbuffer',...
                'color',get(0,'defaultUicontrolBackgroundColor'), ...
-               'Resize','on');
+               'Resize','on', ...
+               'Visible','on');
 
+      % Position it properly, make it visible     
+      position_in_center_of_primary_screen_and_fill_it_bang(self.fig_h, ...
+                                                            screen_left_pad_size, screen_right_pad_size, screen_top_pad_size, screen_bottom_pad_size) ;
+      set(self.fig_h, 'Visible', 'on');
+                                                        
       % Do this stuff after, because at same time causes problems in R2015a
       set(self.fig_h, ...
           'ResizeFcn',@(src,event)(self.resize()),...

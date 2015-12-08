@@ -465,3 +465,12 @@ include submodules in their automatic .zip files, which is how we
 currently distribute Groundswell.  Fixed bug in README install 
 instructions.
 
+
+-----
+
+
+1.28 (December 8, 2015)
+
+Fixed bugs in Roving under >= R2014b.  Added "parula" colormap to 
+Roving if using >= R2014b.  Improved initial positioning of 
+Groundswell, Roving windows.

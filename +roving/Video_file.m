@@ -9,6 +9,7 @@ classdef Video_file < handle
     n_frame;
     rate;  % Hz, sampling rate
     i_frame;  % last frame read, 1-based index
+    original_libtiff_warning_state  % used to restore libtiff warning state after we close a tiff file
   end  % properties
 
   properties (Dependent=true)
@@ -22,7 +23,8 @@ classdef Video_file < handle
         case '.tif'
           info=imfinfo(file_name);
           self.n_frame=length(info);
-          warning('off','MATLAB:imagesci:Tiff:libraryWarning');
+          self.original_libtiff_warning_state = warning('query', 'MATLAB:imagesci:tiffmexutils:libtiffWarning') ;
+          warning('off','MATLAB:imagesci:tiffmexutils:libtiffWarning');
           self.file=Tiff(file_name,'r');
           frame=self.file.read();
           if ndims(frame)>2  %#ok
@@ -113,7 +115,7 @@ classdef Video_file < handle
         switch self.ext
           case '.tif'
             self.file.close();
-            warning('on','MATLAB:imagesci:Tiff:libraryWarning');
+            warning(self.original_libtiff_warning_state);
           case '.mj2'
           otherwise
             error('Video_file:InternalError','Internal error');
