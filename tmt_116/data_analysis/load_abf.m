@@ -23,8 +23,7 @@ end
 % open the file
 fid = fopen(file_name,'r','ieee-le','windows-1252');  % Open the file.
 if fid==-1  % If fopen returns a -1, we did not open the file successfully.
-  error(sprintf('File %s has not been found or permission denied',file_name));
-  return;
+  error(sprintf('File %s has not been found or permission denied',file_name));  %#ok<SPERR>
 end % if
 
 % load the header into a record
@@ -33,7 +32,7 @@ h=get_abf_header(fid);
 % check that data was acquired in gap-free mode
 if h.nOperationMode~=3 && h.nOperationMode~=5
   fclose(fid); 
-  error('Right now, only works on gap-free or episodic data');
+  error('Right now, load_abf() only works on gap-free or episodic data');
 end
 
 % check that file is a recent version

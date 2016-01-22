@@ -25,17 +25,17 @@ units=cell(0,1);
 if strcmp(ext,'.abf')
   try
     [t,data,names,units]=load_abf(filename);
-  catch  %#ok
+  catch exception
     %self.view.unhourglass();
-    errordlg(sprintf('Unable to open file %s',filename_local));  
+    errordlg(sprintf('Unable to open file %s: %s',filename_local,exception.message));  
     return;
   end
 elseif strcmp(ext,'.tcs')
   try
     [names,t_each,data_each,units]=read_tcs(filename);
-  catch %#ok
+  catch exception
     %self.view.unhourglass();
-    errordlg(sprintf('Unable to open file %s',filename_local));  
+    errordlg(sprintf('Unable to open file %s: %s',filename_local,exception.message));  
     return;
   end
   % have to upsample data_each onto a common timeline, unless they're
@@ -49,9 +49,9 @@ elseif strcmp(ext,'.tcs')
 elseif strcmp(ext,'.wav')
   try
     [data,fs]=wavread(filename);
-  catch %#ok
+  catch exception
     %self.view.unhourglass();
-    errordlg(sprintf('Unable to open file %s',filename_local));  
+    errordlg(sprintf('Unable to open file %s: %s',filename_local,exception.message));  
     return;
   end
   dt=(1/fs);
@@ -86,7 +86,7 @@ elseif strcmp(ext,'.txt')
       [t,data,names,units]= ...
         groundswell.load_txt_plain_old(filename);
     end
-  catch exception  %#ok
+  catch exception 
     errordlg(sprintf('Unable to open file %s: %s',filename_local,exception.message));  
     return;
   end
