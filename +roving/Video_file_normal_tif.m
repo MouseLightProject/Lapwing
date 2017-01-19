@@ -2,7 +2,8 @@ classdef Video_file_normal_tif < handle
     
     properties
         tiff_object_  % the file-type specific file object
-        original_libtiff_warning_state  % used to restore libtiff warning state after we close a tiff file        
+        original_libtiff_warning_state_  % used to restore libtiff warning state after we close a tiff file        
+        original_libtiff_error_as_warning_state_
         n_frame_
         bits_per_pel_
         n_row_
@@ -14,8 +15,10 @@ classdef Video_file_normal_tif < handle
         function self=Video_file_normal_tif(file_name)
             info=imfinfo(file_name);
             self.n_frame_=length(info);
-            self.original_libtiff_warning_state = warning('query', 'MATLAB:imagesci:tiffmexutils:libtiffWarning') ;
+            self.original_libtiff_warning_state_ = warning('query', 'MATLAB:imagesci:tiffmexutils:libtiffWarning') ;
             warning('off','MATLAB:imagesci:tiffmexutils:libtiffWarning');
+            self.original_libtiff_error_as_warning_state_ = warning('query', 'MATLAB:imagesci:tiffmexutils:libtiffErrorAsWarning') ;
+            warning('off','MATLAB:imagesci:tiffmexutils:libtiffErrorAsWarning');            
             self.tiff_object_=Tiff(file_name,'r');
             frame=self.tiff_object_.read();
             if ndims(frame)>2  %#ok
@@ -39,7 +42,8 @@ classdef Video_file_normal_tif < handle
 
         function delete(self)
             self.tiff_object_.close();
-            warning(self.original_libtiff_warning_state);
+            warning(self.original_libtiff_warning_state_);
+            warning(self.original_libtiff_error_as_warning_state_);
             self.tiff_object_ = [] ;
         end
         

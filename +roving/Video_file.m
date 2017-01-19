@@ -11,12 +11,13 @@ classdef Video_file < handle
             [~,~,ext] = fileparts(file_name) ;
             switch ext ,
                 case '.tif' ,
-                    [tiff_struct, tiff_header] = roving.tiffread31_header(file_name) ;
-                    tiff_tags = roving.tiffread31_readtags(tiff_struct, tiff_header, 1) ;
-                    is_imagej_jumbo_tiff = ...
-                        roving.IsImageJBigStack(tiff_tags, numel(tiff_header));
-                    fclose(tiff_struct.file) ;
-                    if is_imagej_jumbo_tiff ,
+%                     [tiff_struct, tiff_header] = roving.tiffread31_header(file_name) ;
+%                     tiff_tags = roving.tiffread31_readtags(tiff_struct, tiff_header, 1) ;
+%                     is_imagej_jumbo_tiff = ...
+%                         roving.IsImageJBigStack(tiff_tags, numel(tiff_header));
+%                     fclose(tiff_struct.file) ;
+                    is_file_an_imagej_jumbo_tif = roving.is_file_an_imagej_jumbo_tif(file_name) ;
+                    if  is_file_an_imagej_jumbo_tif ,
                         self.file_type_ = 'imagej_jumbo_tif' ;                        
                         self.typed_video_file_ = roving.Video_file_imagej_jumbo_tif(file_name) ;
                     else
@@ -89,7 +90,7 @@ classdef Video_file < handle
         end
         
         function to_start(self)
-            self.typed_video_file_.start() ;
+            self.typed_video_file_.to_start() ;
             self.i_frame_=0;
         end
     end  % methods

@@ -43,7 +43,7 @@ set(self.image_axes_h,'XLim',[0.5,n_col+0.5],...
                       'YLim',[0.5,n_row+0.5]);
 
 % set the image to the current frame
-if self.image_h
+if ~isempty(self.image_h) ,
   delete(self.image_h)
 end  
 self.image_h = ...
