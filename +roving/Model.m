@@ -303,8 +303,8 @@ classdef Model < handle
     % ---------------------------------------------------------------------
     function close_video(self)
       if ~isempty(self.file)
-        self.file.close();
-        self.file=[];
+        %self.file.close();
+        self.file=[];  % should close file handles
       end
       self.file_name='';
       self.t0=[];
