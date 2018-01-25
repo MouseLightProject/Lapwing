@@ -36,7 +36,7 @@ Copyright
 ---------
 
 Except where noted, all code, documentation, images, and anything else
-in Groundswell is copyright 2009-2015 by Adam L. Taylor.
+in Groundswell is copyright 2009-2017 by Adam L. Taylor.
 
 
 Contributions
@@ -482,3 +482,11 @@ instructions.
 Fixed bugs in Roving under >= R2014b.  Added "parula" colormap to 
 Roving if using >= R2014b.  Improved initial positioning of 
 Groundswell, Roving windows.
+
+
+-----
+
+
+1.29 (January 25, 2017)
+
+Added support for ImageJ "jumbo" TIFF files.
