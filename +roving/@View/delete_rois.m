@@ -49,6 +49,7 @@ if n_roi==0
   set(self.move_all_button_h,'Enable','off');  
   self.set_mode('elliptic_roi');
   set(self.export_to_tcs_menu_h,'Enable','off');
+  set(self.export_to_mask_menu_h,'Enable','off');    
   %self.sync_image_erase_mode();
   % Object invariants are now satisfied, but we un-hide the ROIs
   % as a courtesy at this point.

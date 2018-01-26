@@ -393,15 +393,27 @@ classdef Model < handle
     end
 
     % ---------------------------------------------------------------------
-    function export_to_tcs_file(self,file_name_abs)
+    function export_to_tcs_file(self, file_name_abs)
       % calc the ROI means  
-      roi_mean=self.mean_over_rois();
+      roi_mean = self.mean_over_rois() ;
 
       % save to .tcs file
       t=self.t;  % s
       roi_label={self.roi.label}';
       roving.write_o_to_tcs(file_name_abs,...
                             t,roi_mean,roi_label);
+    end  % method
+    
+    % ---------------------------------------------------------------------
+    function export_rois_to_tiff_file(self, file_name_abs)
+      % Make a mask from the ROIs
+      n_rows = self.n_rows ;
+      n_cols = self.n_cols ;
+      mask_image = ...
+        roving.roi_list_to_mask_image(self.roi, n_rows, n_cols) ;
+
+      % Save to TIFF file
+      imwrite(mask_image, file_name_abs, 'tif') ;
     end  % method
     
     % ---------------------------------------------------------------------
