@@ -490,3 +490,12 @@ Groundswell, Roving windows.
 1.29 (January 25, 2017)
 
 Added support for ImageJ "jumbo" TIFF files.
+
+
+-----
+
+
+1.30 (January 26, 2017)
+
+Added ability to export ROI mask image.
+
