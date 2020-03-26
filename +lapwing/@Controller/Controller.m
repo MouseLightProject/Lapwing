@@ -101,17 +101,17 @@ classdef Controller < handle
         %overlay_h
         %show_overlay
         
-        % widget sizes that we want to store internally, for convenience
-        z_index_text_width
-        z_index_text_height
-        z_index_edit_width
-        z_index_edit_height
-        of_z_slice_count_text_width
-        of_z_slice_count_text_height
-        FPS_text_width
-        FPS_text_height
-        FPS_edit_width
-        FPS_edit_height
+%         % widget sizes that we want to store internally, for convenience
+%         z_index_text_width
+%         z_index_text_height
+%         z_index_edit_width
+%         z_index_edit_height
+%         of_z_slice_count_text_width
+%         of_z_slice_count_text_height
+%         FPS_text_width
+%         FPS_text_height
+%         FPS_edit_width
+%         FPS_edit_height
     end  % properties
     
     properties (Dependent=true)
@@ -308,22 +308,8 @@ classdef Controller < handle
             
             % Set the number of pixels to add to the extent to get things to look
             % nice.  This varies by platform.
-            if ismac
-                edit_pad_width=14;
-                edit_pad_height=7;
-                % setting horizontal alignment to 'right' on mac looks ugly
-                % seems like a matlab bug
-                edit_horizontal_alignment='center';
-                % can't set this to white on mac -- background overflows the box
-                % again, seems like a matlab bug.
-                % setting it to something else looks even worse.
-                edit_bg_color=[1 1 1];
-            else
-                edit_pad_width=10;
-                edit_pad_height=2;
-                edit_horizontal_alignment='right';
-                edit_bg_color=[1 1 1];
-            end
+            [edit_pad_width, edit_pad_height, edit_horizontal_alignment, edit_bg_color] = ...
+                lapwing.get_platform_dependent_quantities() ;  %#ok<ASGLU>
             
             %
             % Frame index counter: Frame: <i> of <n> z_slices
@@ -339,9 +325,9 @@ classdef Controller < handle
                 'String','Frame ',...
                 'Tag','z_index_text_h',...
                 'BackgroundColor',figureColor);
-            z_index_text_extent=get(self.z_index_text_h,'Extent');
-            self.z_index_text_width=z_index_text_extent(3);
-            self.z_index_text_height=z_index_text_extent(4);
+            %z_index_text_extent=get(self.z_index_text_h,'Extent');
+            %self.z_index_text_width=z_index_text_extent(3);
+            %self.z_index_text_height=z_index_text_extent(4);
             self.z_index_edit_h = ...
                 uicontrol('Parent',self.figure_h,...
                 'Style','edit',...
@@ -353,11 +339,11 @@ classdef Controller < handle
                 'HorizontalAlignment',edit_horizontal_alignment,...
                 'BackgroundColor',edit_bg_color,...
                 'Callback',@(src,event)(self.handle_z_index_edit()));
-            z_index_edit_extent=get(self.z_index_edit_h,'Extent');
-            self.z_index_edit_width= ...
-                z_index_edit_extent(3)+edit_pad_width;  % need padding
-            self.z_index_edit_height= ...
-                z_index_edit_extent(4)+edit_pad_height;  % need padding
+            %z_index_edit_extent=get(self.z_index_edit_h,'Extent');
+            %self.z_index_edit_width= ...
+            %    z_index_edit_extent(3)+edit_pad_width;  % need padding
+            %self.z_index_edit_height= ...
+            %    z_index_edit_extent(4)+edit_pad_height;  % need padding
             self.of_z_slice_count_text_h = ...
                 uicontrol('Parent',self.figure_h,...
                 'Style','text',...
@@ -365,9 +351,9 @@ classdef Controller < handle
                 'HorizontalAlignment','left',...
                 'Tag','of_z_slice_count_text_h',...
                 'BackgroundColor',get(self.figure_h,'Color'));
-            of_z_slice_count_text_extent=get(self.of_z_slice_count_text_h,'Extent');
-            self.of_z_slice_count_text_width=of_z_slice_count_text_extent(3);
-            self.of_z_slice_count_text_height=of_z_slice_count_text_extent(4);
+            %of_z_slice_count_text_extent=get(self.of_z_slice_count_text_h,'Extent');
+            %self.of_z_slice_count_text_width=of_z_slice_count_text_extent(3);
+            %self.of_z_slice_count_text_height=of_z_slice_count_text_extent(4);
             % blank strings now that we have the desired sizes
             set(self.z_index_edit_h,'string','');
             set(self.of_z_slice_count_text_h,'string','');
@@ -379,9 +365,9 @@ classdef Controller < handle
                 'String','FPS: ',...
                 'Tag','FPS_text_h',...
                 'BackgroundColor',get(self.figure_h,'Color'));
-            FPS_text_extent=get(self.FPS_text_h,'Extent');
-            self.FPS_text_width=FPS_text_extent(3);
-            self.FPS_text_height=FPS_text_extent(4);
+            %FPS_text_extent=get(self.FPS_text_h,'Extent');
+            %self.FPS_text_width=FPS_text_extent(3);
+            %self.FPS_text_height=FPS_text_extent(4);
             self.FPS_edit_h = ...
                 uicontrol('Parent',self.figure_h,...
                 'Style','edit',...
@@ -393,9 +379,9 @@ classdef Controller < handle
                 'HorizontalAlignment',edit_horizontal_alignment,...
                 'BackgroundColor',edit_bg_color,...
                 'Callback',@(src,event)(self.handle_fps_edit()));
-            FPS_edit_extent=get(self.FPS_edit_h,'Extent');
-            self.FPS_edit_width=FPS_edit_extent(3)+edit_pad_width;  % padding
-            self.FPS_edit_height=FPS_edit_extent(4)+edit_pad_height;  % padding
+            %FPS_edit_extent=get(self.FPS_edit_h,'Extent');
+            %self.FPS_edit_width=FPS_edit_extent(3)+edit_pad_width;  % padding
+            %self.FPS_edit_height=FPS_edit_extent(4)+edit_pad_height;  % padding
             % blank strings now that we have the desired sizes
             set(self.FPS_edit_h,'string','');
             
@@ -836,18 +822,34 @@ classdef Controller < handle
             n_row=diff(get(self.image_axes_h,'ylim'));
             zoom=min((image_z_slice_area_width/n_col), ...
                 (image_z_slice_area_height/n_row));
-            % unpack the sizes of certain UI elements that were determined
-            % upon view creation
-            z_index_text_width=self.z_index_text_width;  %#ok<PROP>
-            z_index_text_height=self.z_index_text_height;  %#ok<PROP>
-            z_index_edit_width=self.z_index_edit_width;
-            z_index_edit_height=self.z_index_edit_height;
-            of_z_slice_count_text_width=self.of_z_slice_count_text_width;  %#ok<PROP>
-            of_z_slice_count_text_height=self.of_z_slice_count_text_height;  %#ok<PROP>
-            FPS_text_width=self.FPS_text_width;  %#ok<PROP>
-            FPS_text_height=self.FPS_text_height;  %#ok<PROP>
-            FPS_edit_width=self.FPS_edit_width;  %#ok<PROP>
-            FPS_edit_height=self.FPS_edit_height;  %#ok<PROP>
+            
+            % Set the number of pixels to add to the extent to get things to look
+            % nice.  This varies by platform.
+            [edit_pad_width, edit_pad_height, edit_horizontal_alignment, edit_bg_color] = ...
+                lapwing.get_platform_dependent_quantities() ;  %#ok<ASGLU>
+            
+            % get the sizes of certain UI elements 
+            z_index_text_extent = get(self.z_index_text_h,'Extent') ;
+            z_index_text_width = z_index_text_extent(3) ;
+            z_index_text_height = z_index_text_extent(4) ;
+            
+            z_index_edit_extent=get(self.z_index_edit_h,'Extent');
+            z_index_edit_width= ...
+                z_index_edit_extent(3)+edit_pad_width;  % need padding
+            z_index_edit_height= ...
+                z_index_edit_extent(4)+edit_pad_height;  % need padding
+            
+            of_z_slice_count_text_extent = get(self.of_z_slice_count_text_h,'Extent') ;
+            of_z_slice_count_text_width = of_z_slice_count_text_extent(3) ;
+            of_z_slice_count_text_height = of_z_slice_count_text_extent(4) ;
+            
+            FPS_text_extent = get(self.FPS_text_h,'Extent') ;
+            FPS_text_width = FPS_text_extent(3) ;
+            FPS_text_height = FPS_text_extent(4) ;
+            
+            FPS_edit_extent = get(self.FPS_edit_h,'Extent') ;
+            FPS_edit_width = FPS_edit_extent(3) + edit_pad_width ;  % padding
+            FPS_edit_height = FPS_edit_extent(4) + edit_pad_height ;  % padding
             
             
             %
