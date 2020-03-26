@@ -64,12 +64,12 @@ else
 end  
 set(self.FPS_edit_h,'String',FPS_edit_string);
 set(self.z_index_edit_h,'String',sprintf('%d',self.z_index));
-n_frame=self.model.n_frames;
-set(self.of_n_frames_text_h,'String',sprintf(' of %d',n_frame));
-%of_n_frames_text_extent=get(self.of_n_frames_text_h,'Extent');
-%of_n_frames_text_position=get(self.of_n_frames_text_h,'Position');
-%pos_new=[of_n_frames_text_position(1:2) of_n_frames_text_extent(3:4)];
-%set(self.of_n_frames_text_h,'Position',pos_new);
+n_frame=self.model.z_slice_count;
+set(self.of_z_slice_count_text_h,'String',sprintf(' of %d',n_frame));
+%of_z_slice_count_text_extent=get(self.of_z_slice_count_text_h,'Extent');
+%of_z_slice_count_text_position=get(self.of_z_slice_count_text_h,'Position');
+%pos_new=[of_z_slice_count_text_position(1:2) of_z_slice_count_text_extent(3:4)];
+%set(self.of_z_slice_count_text_h,'Position',pos_new);
 
 % Compute some things that effect what's enabled and what's not
 %at_least_one_roi_exists=~isempty(self.model.roi);

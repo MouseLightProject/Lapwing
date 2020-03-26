@@ -6,7 +6,7 @@ classdef Overlay_file_reader < handle
   end  % properties
   
   properties (Dependent=true)
-    n_frames;
+    z_slice_count;
   end
   
   methods
@@ -28,17 +28,17 @@ classdef Overlay_file_reader < handle
               file_name);  %#ok
       end
       % read the number of frames
-      [n_frames,count]=fread(self.fid,1,'*uint64');
+      [z_slice_count,count]=fread(self.fid,1,'*uint64');
       if count~=1
         fclose(self.fid);
         self.fid=[];
-        error('Overlay_file_reader.unable_to_read_n_frames', ...
+        error('Overlay_file_reader.unable_to_read_z_slice_count', ...
               'Unable to read the number of frames in %s', ...
               file_name);  %#ok
       end
       % read the index
-      [self.index,count]=fread(self.fid,n_frames,'*uint64');
-      if count~=n_frames
+      [self.index,count]=fread(self.fid,z_slice_count,'*uint64');
+      if count~=z_slice_count
         fclose(self.fid);
         self.fid=[];
         error('Overlay_file_reader.unable_to_read_index', ...
@@ -47,13 +47,13 @@ classdef Overlay_file_reader < handle
       end
     end  % function
 
-    function n_frames=get.n_frames(self)
-      n_frames=length(self.index);
+    function z_slice_count=get.z_slice_count(self)
+      z_slice_count=length(self.index);
     end
     
     function frame_overlay=read_frame_overlay(self,i_frame)
-      n_frames=length(self.index);
-      if (1<=i_frame) && (i_frame<=n_frames)
+      z_slice_count=length(self.index);
+      if (1<=i_frame) && (i_frame<=z_slice_count)
         offset=self.index(i_frame);
         status=fseek(self.fid,double(offset),'bof');
           % in r2012a on mac, fseek() returns -1 if you give it a uint64

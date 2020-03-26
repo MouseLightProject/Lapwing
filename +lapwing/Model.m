@@ -15,7 +15,7 @@ classdef Model < handle
          % that in file
     n_rows;
     n_cols;
-    n_frames;  % number of time samples
+    z_slice_count;  % number of time samples
     tl;  % 2x1 matrix holding min, max time
     n_rois;
     t;  % a complete timeline for all frames
@@ -36,8 +36,8 @@ classdef Model < handle
     
     % ---------------------------------------------------------------------
     function t=get.t(self)
-      if ~isempty(self.t0) && ~isempty(self.dt) && ~isempty(self.n_frames)
-        t=self.t0+self.dt*(0:(self.n_frames-1))';
+      if ~isempty(self.t0) && ~isempty(self.dt) && ~isempty(self.z_slice_count)
+        t=self.t0+self.dt*(0:(self.z_slice_count-1))';
       else
         t=[];
       end
@@ -71,7 +71,7 @@ classdef Model < handle
     end
     
     % ---------------------------------------------------------------------
-    function n_frame=get.n_frames(self)
+    function n_frame=get.z_slice_count(self)
       if isempty(self.file)
         n_frame=[];
       else
@@ -89,7 +89,7 @@ classdef Model < handle
       t0=self.t0;
       dt=self.dt;
       if ~isempty(self.t0) && ~isempty(self.dt)
-        n_frame=self.n_frames;
+        n_frame=self.z_slice_count;
         if isempty(n_frame) || (n_frame==0) ,
           tl=[];
         else
@@ -108,7 +108,7 @@ classdef Model < handle
 %     function sync_t(self)
 %       t0=self.t0;
 %       dt=self.dt;
-%       n_frame=self.n_frames;
+%       n_frame=self.z_slice_count;
 %       self.t=t0+dt*(0:(n_frame-1))';
 %     end
 
@@ -155,7 +155,7 @@ classdef Model < handle
 
     % ---------------------------------------------------------------------
     function frame_overlay=get_frame_overlay(self,i)
-      if (1<=i) && (i<=self.overlay_file.n_frames)
+      if (1<=i) && (i<=self.overlay_file.z_slice_count)
         frame_overlay=self.overlay_file.read_frame_overlay(i);
       else
         frame_overlay=cell(0,1);  % just return empty overlay
@@ -169,13 +169,13 @@ classdef Model < handle
 %                  % edge of the frames
 %       % find the translation for each frame
 %       options=optimset('maxfunevals',1000);
-%       n_frames=self.n_frames;
+%       z_slice_count=self.z_slice_count;
 %       self.file.to_start();
-%       if n_frames>0
+%       if z_slice_count>0
 %         frame_first=double(self.file.get_next());
 %       end
-%       b_per_frame=zeros(2,n_frames);
-%       for k=2:n_frames
+%       b_per_frame=zeros(2,z_slice_count);
+%       for k=2:z_slice_count
 %         frame_this=double(self.file.get_next());
 %         b_per_frame(:,k)=...
 %           find_translation(frame_first, ...
@@ -185,7 +185,7 @@ classdef Model < handle
 %                            options);
 %       end
 %       % register each frame using the above-determined translation
-%       for k=2:n_frames
+%       for k=2:z_slice_count
 %         % implicit conversion to the type of self.data
 %         self.data(:,:,k)=register_frame(double(self.data(:,:,k)), ...
 %                                         eye(2), ...
@@ -262,14 +262,14 @@ classdef Model < handle
         lapwing.roi_list_to_stack(self.roi,n_rows,n_cols);
       
       % analyze each of the rois
-      n_frames=self.n_frames;
+      z_slice_count=self.z_slice_count;
       n_rois=self.n_rois;
       n_pels=reshape(sum(sum(roi_stack,2),1),[n_rois 1]);  % pels in each roi
       %n_ppf=n_row*n_col;  % pixels per frame
-      x_roi=zeros(n_frames,n_rois);
+      x_roi=zeros(z_slice_count,n_rois);
 
       % is this faster?  yes.  screw you, JIT compiler.
-      for k=1:n_frames
+      for k=1:z_slice_count
         frame_this=self.get_frame(k);
         for l=1:n_rois
           roi_mask=roi_stack(:,:,l);

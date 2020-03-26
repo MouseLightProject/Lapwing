@@ -20,7 +20,7 @@ classdef Controller < handle
         
         z_index_text_h
         z_index_edit_h
-        of_n_frames_text_h
+        of_z_slice_count_text_h
         FPS_text_h
         FPS_edit_h
         
@@ -106,8 +106,8 @@ classdef Controller < handle
         z_index_text_height
         z_index_edit_width
         z_index_edit_height
-        of_n_frames_text_width
-        of_n_frames_text_height
+        of_z_slice_count_text_width
+        of_z_slice_count_text_height
         FPS_text_width
         FPS_text_height
         FPS_edit_width
@@ -304,7 +304,7 @@ classdef Controller < handle
                 'Tag','to_end_button_h',...
                 'enable','off',...
                 'Callback', ...
-                @(src,event)(self.change_frame_abs(self.model.n_frames)));
+                @(src,event)(self.change_frame_abs(self.model.z_slice_count)));
             
             % Set the number of pixels to add to the extent to get things to look
             % nice.  This varies by platform.
@@ -358,19 +358,19 @@ classdef Controller < handle
                 z_index_edit_extent(3)+edit_pad_width;  % need padding
             self.z_index_edit_height= ...
                 z_index_edit_extent(4)+edit_pad_height;  % need padding
-            self.of_n_frames_text_h = ...
+            self.of_z_slice_count_text_h = ...
                 uicontrol('Parent',self.figure_h,...
                 'Style','text',...
                 'String',' of 9999999',...
                 'HorizontalAlignment','left',...
-                'Tag','of_n_frames_text_h',...
+                'Tag','of_z_slice_count_text_h',...
                 'BackgroundColor',get(self.figure_h,'Color'));
-            of_n_frames_text_extent=get(self.of_n_frames_text_h,'Extent');
-            self.of_n_frames_text_width=of_n_frames_text_extent(3);
-            self.of_n_frames_text_height=of_n_frames_text_extent(4);
+            of_z_slice_count_text_extent=get(self.of_z_slice_count_text_h,'Extent');
+            self.of_z_slice_count_text_width=of_z_slice_count_text_extent(3);
+            self.of_z_slice_count_text_height=of_z_slice_count_text_extent(4);
             % blank strings now that we have the desired sizes
             set(self.z_index_edit_h,'string','');
-            set(self.of_n_frames_text_h,'string','');
+            set(self.of_z_slice_count_text_h,'string','');
             
             % Determine sizes of frames per second controls
             self.FPS_text_h = ...
@@ -842,8 +842,8 @@ classdef Controller < handle
             z_index_text_height=self.z_index_text_height;  %#ok<PROP>
             z_index_edit_width=self.z_index_edit_width;
             z_index_edit_height=self.z_index_edit_height;
-            of_n_frames_text_width=self.of_n_frames_text_width;  %#ok<PROP>
-            of_n_frames_text_height=self.of_n_frames_text_height;  %#ok<PROP>
+            of_z_slice_count_text_width=self.of_z_slice_count_text_width;  %#ok<PROP>
+            of_z_slice_count_text_height=self.of_z_slice_count_text_height;  %#ok<PROP>
             FPS_text_width=self.FPS_text_width;  %#ok<PROP>
             FPS_text_height=self.FPS_text_height;  %#ok<PROP>
             FPS_edit_width=self.FPS_edit_width;  %#ok<PROP>
@@ -948,12 +948,12 @@ classdef Controller < handle
                 z_index_edit_height]);
             
             % set the position of the text object that says "of <number of frames total>"
-            set(self.of_n_frames_text_h, ...
+            set(self.of_z_slice_count_text_h, ...
                 'Position',[z_index_text_left_margin+z_index_text_width+...
                 z_index_edit_width,...
                 layout_y_offset+z_index_text_baseline,...
-                of_n_frames_text_width,...
-                of_n_frames_text_height]);
+                of_z_slice_count_text_width,...
+                of_z_slice_count_text_height]);
             
             % Set the positions of frames-per-second controls
             FPS_elements_width=FPS_text_width+FPS_edit_width;
@@ -1029,7 +1029,7 @@ classdef Controller < handle
         function handle_z_index_edit(self)            
             new_z_index_string = get(self.z_index_edit_h,'String') ;
             new_z_index = str2double(new_z_index_string) ;
-            n_z_slices = self.model.n_frames ;
+            n_z_slices = self.model.z_slice_count ;
             if (new_z_index>=1) && (new_z_index<=n_z_slices) ,
                 self.change_frame_abs(new_z_index) ;
             else

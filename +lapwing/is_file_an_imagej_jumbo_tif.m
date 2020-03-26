@@ -23,12 +23,12 @@ function result = is_file_an_imagej_jumbo_tif(file_name)
                     else
                         images_pair = every_pair_a_pair{i_images} ;
                         if length(images_pair)>=2 ,
-                            n_frames_as_string = images_pair{2} ;
-                            n_frames = str2double(n_frames_as_string) ;
-                            if isfinite(n_frames) && isreal(n_frames) && (n_frames>=0) && round(n_frames)==n_frames ,
-                                % n_frames looks like a plausible number of frames
-                                % if n_frames is greater than 1, this is an imagej-style multi-page tif
-                                if n_frames==1 ,
+                            z_slice_count_as_string = images_pair{2} ;
+                            z_slice_count = str2double(z_slice_count_as_string) ;
+                            if isfinite(z_slice_count) && isreal(z_slice_count) && (z_slice_count>=0) && round(z_slice_count)==z_slice_count ,
+                                % z_slice_count looks like a plausible number of frames
+                                % if z_slice_count is greater than 1, this is an imagej-style multi-page tif
+                                if z_slice_count==1 ,
                                     % Only one frame, so this is just a normal TIFF
                                     result = false ;
                                 else

@@ -2,7 +2,7 @@ function play(self,direction)
 
     % play the movie
     start_z_index=self.z_index;
-    n_frames=self.model.n_frames;
+    z_slice_count=self.model.z_slice_count;
     %n_rois=length(self.model.roi);
     % tempargh set(self.image_h,'EraseMode','none');
     fps=self.model.fs;
@@ -12,7 +12,7 @@ function play(self,direction)
     end
     spf=1/fps;
     % if (direction>0)
-    %   frame_sequence=start_z_index:n_frames;
+    %   frame_sequence=start_z_index:z_slice_count;
     % else
     %   frame_sequence=start_z_index:-1:1;
     % end
@@ -20,7 +20,7 @@ function play(self,direction)
     z_index=start_z_index;
     %for z_index=frame_sequence
     %tic;
-    while (1<=z_index) && (z_index<=n_frames) ,
+    while (1<=z_index) && (z_index<=z_slice_count) ,
         %dt_this=toc;
         %fs=1/dt_this
         tic;

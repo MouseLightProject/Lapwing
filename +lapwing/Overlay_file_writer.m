@@ -4,14 +4,14 @@ classdef Overlay_file_writer < handle
     file_header='ovl00001';
     fid;
     index;
-    n_frames_written;
+    z_slice_count_written;
   end  % properties
   
   properties (Dependent=true)
   end
   
   methods
-    function self=Overlay_file_writer(file_name,n_frames)
+    function self=Overlay_file_writer(file_name,z_slice_count)
       self.fid=fopen(file_name,'wb','ieee-le','ISO-8859-1');
       if self.fid<0
         fclose(self.fid);
@@ -30,32 +30,32 @@ classdef Overlay_file_writer < handle
               file_name);  %#ok
       end
       % write the number of frames
-      count=fwrite(self.fid,n_frames,'uint64');
+      count=fwrite(self.fid,z_slice_count,'uint64');
       if count~=1
         fclose(self.fid);
         self.fid=[];
-        error('Overlay_file_writer.unable_to_write_n_frames', ...
+        error('Overlay_file_writer.unable_to_write_z_slice_count', ...
               'Unable to write the number of frames in %s', ...
               file_name);  %#ok
       end
       % write an empty index
-      self.index=zeros(n_frames,1,'uint64');
+      self.index=zeros(z_slice_count,1,'uint64');
       count=fwrite(self.fid,self.index,'uint64');
-      if count~=n_frames
+      if count~=z_slice_count
         fclose(self.fid);
         self.fid=[];
         error('Overlay_file_writer.unable_to_write_empty_index', ...
               'Unable to write the empty index in %s', ...
               file_name);  %#ok
       end
-      self.n_frames_written=uint64(0);
+      self.z_slice_count_written=uint64(0);
     end  % function
 
     function append_frame_overlay(self,frame_overlay)
       % write the current file position to the index
       file_offset=ftell(self.fid);
       if file_offset>=0
-        self.index(self.n_frames_written+1)=ftell(self.fid);
+        self.index(self.z_slice_count_written+1)=ftell(self.fid);
       else
         close(self.fid);
         self.fid=[];
@@ -87,16 +87,16 @@ classdef Overlay_file_writer < handle
       end
       
       % update the number of frames written
-      self.n_frames_written=self.n_frames_written+1;
+      self.z_slice_count_written=self.z_slice_count_written+1;
     end
     
     function close(self)
       if ~isempty(self.fid)
         % write the in-memory index to disk
         fseek(self.fid,length(self.file_header)+8,'bof');
-        n_frames=length(self.index);
+        z_slice_count=length(self.index);
         count=fwrite(self.fid,self.index,'uint64');
-        if count~=n_frames
+        if count~=z_slice_count
           fclose(self.fid);
           self.fid=[];
           error('Overlay_file_writer.unable_to_write_index', ...
