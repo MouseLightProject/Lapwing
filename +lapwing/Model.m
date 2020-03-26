@@ -5,9 +5,9 @@ classdef Model < handle
     dt;
     file_name  % the name of the video file currently open
     file;  % the handle of a VideoFile object, the current file (or empty)   
-    roi;  % n_roi x 1 struct with fields border and label
-    overlay_file;  
-      % an Overlay_file_reader object containing frame overlays, or empty
+    %roi;  % n_roi x 1 struct with fields border and label
+    %overlay_file;  
+    %  % an Overlay_file_reader object containing frame overlays, or empty
   end  % properties
   
   properties (Dependent=true)
@@ -17,7 +17,7 @@ classdef Model < handle
     n_cols;
     z_slice_count;  % number of time samples
     tl;  % 2x1 matrix holding min, max time
-    n_rois;
+    %n_rois;
     t;  % a complete timeline for all frames
     a_video_is_open;  % true iff a video is currently open
   end
@@ -29,9 +29,9 @@ classdef Model < handle
       self.file=[];
       self.t0=[];  % s
       self.dt=[];  % s
-      self.roi=struct('border',cell(0,1), ...
-                      'label',cell(0,1));
-      self.overlay_file=[];                    
+%       self.roi=struct('border',cell(0,1), ...
+%                       'label',cell(0,1));
+      %self.overlay_file=[];                    
     end  % function
     
     % ---------------------------------------------------------------------
@@ -79,10 +79,10 @@ classdef Model < handle
       end
     end
     
-    % ---------------------------------------------------------------------
-    function n_roi=get.n_rois(self)
-      n_roi=length(self.roi);
-    end
+%     % ---------------------------------------------------------------------
+%     function n_roi=get.n_rois(self)
+%       n_roi=length(self.roi);
+%     end
 
     % ---------------------------------------------------------------------
     function tl=get.tl(self)
@@ -153,14 +153,14 @@ classdef Model < handle
       frame=self.file.get_frame(i);
     end
 
-    % ---------------------------------------------------------------------
-    function frame_overlay=get_frame_overlay(self,i)
-      if (1<=i) && (i<=self.overlay_file.z_slice_count)
-        frame_overlay=self.overlay_file.read_frame_overlay(i);
-      else
-        frame_overlay=cell(0,1);  % just return empty overlay
-      end
-    end
+%     % ---------------------------------------------------------------------
+%     function frame_overlay=get_frame_overlay(self,i)
+%       if (1<=i) && (i<=self.overlay_file.z_slice_count)
+%         frame_overlay=self.overlay_file.read_frame_overlay(i);
+%       else
+%         frame_overlay=cell(0,1);  % just return empty overlay
+%       end
+%     end
     
 %   Since we now are keeping the movie on-disk, mutating it becomes 
 %   more problematical...
@@ -254,32 +254,6 @@ classdef Model < handle
     end
 
     % ---------------------------------------------------------------------
-    function x_roi=mean_over_rois(self)
-      % get a mask for each roi
-      n_rows=self.n_rows;
-      n_cols=self.n_cols;
-      roi_stack= ...
-        lapwing.roi_list_to_stack(self.roi,n_rows,n_cols);
-      
-      % analyze each of the rois
-      z_slice_count=self.z_slice_count;
-      n_rois=self.n_rois;
-      n_pels=reshape(sum(sum(roi_stack,2),1),[n_rois 1]);  % pels in each roi
-      %n_ppf=n_row*n_col;  % pixels per frame
-      x_roi=zeros(z_slice_count,n_rois);
-
-      % is this faster?  yes.  screw you, JIT compiler.
-      for k=1:z_slice_count
-        frame_this=self.get_frame(k);
-        for l=1:n_rois
-          roi_mask=roi_stack(:,:,l);
-          s=sum(sum(roi_mask.*double(frame_this)));
-          x_roi(k,l)=s/n_pels(l);
-        end
-      end
-    end  % mean_over_rois()
-    
-    % ---------------------------------------------------------------------
     function open_video_given_file_name(self,file_name)
       % filename is a filename, can be relative or absolute
       
@@ -309,12 +283,12 @@ classdef Model < handle
       self.file_name='';
       self.t0=[];
       self.dt=[];  % s
-      self.roi=struct('border',cell(0,1), ...
-                      'label',cell(0,1));
-      if ~isempty(self.overlay_file)
-        self.overlay_file.close();
-        self.overlay_file=[];
-      end
+%       self.roi=struct('border',cell(0,1), ...
+%                       'label',cell(0,1));
+%       if ~isempty(self.overlay_file)
+%         self.overlay_file.close();
+%         self.overlay_file=[];
+%       end
     end  % method
     
     % ---------------------------------------------------------------------
@@ -322,101 +296,6 @@ classdef Model < handle
       result=~isempty(self.file);
     end  % method
 
-    % ---------------------------------------------------------------------
-    function load_rois_from_rpb(self,full_filename)
-      %
-      % load in the ROI data from the file, w/ error checking
-      %
-
-      % open the file
-      %full_filename=strcat(pathname,filename);
-      [~,basename,ext]=fileparts(full_filename);
-      filename=[basename ext];
-      fid=fopen(full_filename,'r','ieee-be');
-      if (fid == -1)
-        error('lapwing.Model:unableToOpenFile', ...
-              sprintf('Unable to open file %s',filename));  %#ok
-      end
-
-      % read the number of rois
-      [n_rois,count]=fread(fid,1,'uint32');
-      %n_rois
-      if (count ~= 1)
-        fclose(fid);
-        error('lapwing.Model:unableToLoadROIs', ...
-              sprintf('Error loading ROIs from file %s',filename));  %#ok
-      end
-
-      % dimension cell arrays to hold the ROI labels and vertex lists
-      labels=cell(n_rois,1);
-      borders=cell(n_rois,1);
-
-      % for each ROI, read the label and the vertex list
-      for j=1:n_rois
-        % the label
-        [n_chars,count]=fread(fid,1,'uint32');
-        if (count ~= 1)
-          fclose(fid);
-          error('lapwing.Model:unableToLoadROIs', ...
-                sprintf('Error loading ROIs from file %s',filename));  %#ok
-        end
-        [temp,count]=fread(fid,[1 n_chars],'uchar');
-        if (count ~= n_chars)
-          fclose(fid);
-          error('lapwing.Model:unableToLoadROIs', ...
-                sprintf('Error loading ROIs from file %s',filename));  %#ok
-        end
-        labels{j}=char(temp);
-        % the vertex list
-        [n_vertices,count]=fread(fid,1,'uint32');
-        if (count ~= 1)
-          fclose(fid);
-          error('lapwing.Model:unableToLoadROIs', ...
-                sprintf('Error loading ROIs from file %s',filename));  %#ok
-        end
-        %this_border=zeros(2,n_vertices);
-        [this_border,count]=fread(fid,[2 n_vertices],'float32');
-        %this_border
-        if (count ~= 2*n_vertices)
-          fclose(fid);
-          error('lapwing.Model:unableToLoadROIs', ...
-                sprintf('Error loading ROIs from file %s',filename));  %#ok
-        end
-        borders{j}=this_border;
-      end
-
-      % close the file
-      fclose(fid);
-
-      % put the new rois in the model
-      self.set_roi(borders,labels);
-    end
-
-    % ---------------------------------------------------------------------
-    function export_to_tcs_file(self, file_name_abs)
-      % calc the ROI means  
-      roi_mean = self.mean_over_rois() ;
-
-      % save to .tcs file
-      t=self.t;  % s
-      roi_label={self.roi.label}';
-      lapwing.write_o_to_tcs(file_name_abs,...
-                            t,roi_mean,roi_label);
-    end  % method
-    
-    % ---------------------------------------------------------------------
-    function export_rois_to_tiff_file(self, file_name_abs)
-      % Make a mask from the ROIs
-      n_rows = self.n_rows ;
-      n_cols = self.n_cols ;
-      mask_image = ...
-        lapwing.roi_list_to_mask_image(self.roi, n_rows, n_cols) ;
-
-      % Save to TIFF file
-      imwrite(mask_image, file_name_abs, 'tif') ;
-    end  % method
-    
-    % ---------------------------------------------------------------------
   end  % methods
 
 end  % classdef
