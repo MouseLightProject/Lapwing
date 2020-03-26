@@ -27,10 +27,10 @@ set(self.colorbar_h,'YData',[cb_min cb_max]);
 self.colorbar_min=cb_min;
 self.colorbar_max=cb_max;
 
-% recalculate indexed_frame, set in figure
+% recalculate indexed_z_slice, set in figure
 if self.model.a_video_is_open ,
   % change the displayed image
-  set(self.image_h,'CData',self.indexed_frame);
+  set(self.image_h,'CData',self.indexed_z_slice);
 end
 
 end

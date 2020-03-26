@@ -12,7 +12,7 @@ self.colorbar_max_string=sprintf('%d',data_max);
 self.colorbar_min=str2double(self.colorbar_min_string);
 self.colorbar_max=str2double(self.colorbar_max_string);
                             
-% reset the frame index
+% reset the z_slice index
 self.z_index=1;
 
 % init roi state

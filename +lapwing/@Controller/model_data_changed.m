@@ -4,7 +4,7 @@ function model_data_changed(self)
 % information) has changed.  Need to update self appropriately.
 
 % change the image data in the image HG object
-set(self.image_h,'cdata',self.indexed_frame);
+set(self.image_h,'cdata',self.indexed_z_slice);
 
 % update the figure
 drawnow('update');

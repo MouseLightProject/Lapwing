@@ -15,7 +15,7 @@ classdef Model < handle
         z_slice_count;  % number of time samples
         tl;  % 2x1 matrix holding min, max time
         %n_rois;
-        t;  % a complete timeline for all frames
+        t;  % a complete timeline for all z_slices
         a_video_is_open;  % true iff a video is currently open
     end
     
@@ -68,11 +68,11 @@ classdef Model < handle
         end
         
         % ---------------------------------------------------------------------
-        function n_frame=get.z_slice_count(self)
-            if isempty(self.file)
-                n_frame=[];
+        function z_slice_count = get.z_slice_count(self)
+            if isempty(self.file) ,
+                z_slice_count = [] ;
             else
-                n_frame=self.file.n_frame;
+                z_slice_count = self.file.n_frame ;
             end
         end
         
@@ -86,11 +86,11 @@ classdef Model < handle
             t0=self.t0;
             dt=self.dt;
             if ~isempty(self.t0) && ~isempty(self.dt)
-                n_frame=self.z_slice_count;
-                if isempty(n_frame) || (n_frame==0) ,
+                n_z_slice=self.z_slice_count;
+                if isempty(n_z_slice) || (n_z_slice==0) ,
                     tl=[];
                 else
-                    tl=t0+[0 dt*(n_frame-1)];
+                    tl=t0+[0 dt*(n_z_slice-1)];
                 end
             else
                 tl=[];
@@ -105,8 +105,8 @@ classdef Model < handle
         %     function sync_t(self)
         %       t0=self.t0;
         %       dt=self.dt;
-        %       n_frame=self.z_slice_count;
-        %       self.t=t0+dt*(0:(n_frame-1))';
+        %       n_z_slice=self.z_slice_count;
+        %       self.t=t0+dt*(0:(n_z_slice-1))';
         %     end
         
         % ---------------------------------------------------------------------
@@ -146,16 +146,16 @@ classdef Model < handle
         end
         
         % ---------------------------------------------------------------------
-        function frame=get_frame(self,i)
-            frame=self.file.get_frame(i);
+        function z_slice=get_z_slice(self,i)
+            z_slice=self.file.get_frame(i);
         end
         
         %     % ---------------------------------------------------------------------
-        %     function frame_overlay=get_frame_overlay(self,i)
+        %     function z_slice_overlay=get_z_slice_overlay(self,i)
         %       if (1<=i) && (i<=self.overlay_file.z_slice_count)
-        %         frame_overlay=self.overlay_file.read_frame_overlay(i);
+        %         z_slice_overlay=self.overlay_file.read_z_slice_overlay(i);
         %       else
-        %         frame_overlay=cell(0,1);  % just return empty overlay
+        %         z_slice_overlay=cell(0,1);  % just return empty overlay
         %       end
         %     end
         
@@ -163,59 +163,59 @@ classdef Model < handle
         %   more problematical...
         %     function motion_correct(self)
         %       border=2;  % border to ignore, seems to help with nans and such at the
-        %                  % edge of the frames
-        %       % find the translation for each frame
+        %                  % edge of the z_slices
+        %       % find the translation for each z_slice
         %       options=optimset('maxfunevals',1000);
         %       z_slice_count=self.z_slice_count;
         %       self.file.to_start();
         %       if z_slice_count>0
-        %         frame_first=double(self.file.get_next());
+        %         z_slice_first=double(self.file.get_next());
         %       end
-        %       b_per_frame=zeros(2,z_slice_count);
+        %       b_per_z_slice=zeros(2,z_slice_count);
         %       for k=2:z_slice_count
-        %         frame_this=double(self.file.get_next());
-        %         b_per_frame(:,k)=...
-        %           find_translation(frame_first, ...
-        %                            frame_this, ...
+        %         z_slice_this=double(self.file.get_next());
+        %         b_per_z_slice(:,k)=...
+        %           find_translation(z_slice_first, ...
+        %                            z_slice_this, ...
         %                            border,...
-        %                            b_per_frame(:,k-1),...
+        %                            b_per_z_slice(:,k-1),...
         %                            options);
         %       end
-        %       % register each frame using the above-determined translation
+        %       % register each z_slice using the above-determined translation
         %       for k=2:z_slice_count
         %         % implicit conversion to the type of self.data
-        %         self.data(:,:,k)=register_frame(double(self.data(:,:,k)), ...
+        %         self.data(:,:,k)=register_z_slice(double(self.data(:,:,k)), ...
         %                                         eye(2), ...
-        %                                         b_per_frame(:,k));
+        %                                         b_per_z_slice(:,k));
         %       end
         %     end  % motion_correct
         
         % ---------------------------------------------------------------------
         function [d_min,d_max]=min_max(self,i)
-            % get the max and min values of frame i
+            % get the max and min values of z_slice i
             % d_min and d_max are doubles, regardless the type of self.data
-            frame=double(self.get_frame(i));
-            d_min=min(min(frame));
-            d_max=max(max(frame));
+            z_slice=double(self.get_z_slice(i));
+            d_min=min(min(z_slice));
+            d_max=max(max(z_slice));
         end  % data_bounds
         
         %     function [h,t]=hist(self,i,n_bins)
-        %       % construct a histogram of the data values in frame i
-        %       frame=double(self.get_frame(i));
-        %       [h,t]=hist(frame(:),n_bins);
+        %       % construct a histogram of the data values in z_slice i
+        %       z_slice=double(self.get_z_slice(i));
+        %       [h,t]=hist(z_slice(:),n_bins);
         %     end
         
         %     function [h,t]=hist_abs(self,i,n_bins)
-        %       frame=double(self.get_frame(i));
-        %       frame=abs(frame);
-        %       [h,t]=hist(frame(:),n_bins);
+        %       z_slice=double(self.get_z_slice(i));
+        %       z_slice=abs(z_slice);
+        %       [h,t]=hist(z_slice(:),n_bins);
         %     end
         
         % ---------------------------------------------------------------------
         function [d_05,d_95]=five_95(self,i)
             % d_05 and d_95 are doubles, regardless the type of self.data
-            frame=double(self.get_frame(i));
-            d=lapwing.quantile_mine(frame(:),[0.05 0.95]');
+            z_slice=double(self.get_z_slice(i));
+            d=lapwing.quantile_mine(z_slice(:),[0.05 0.95]');
             d_05=d(1);
             d_95=d(2);
         end  % five_95
@@ -223,15 +223,15 @@ classdef Model < handle
         % ---------------------------------------------------------------------
         function d_max=max_abs(self,i)
             % d_max is a double, regardless of the type of self.data
-            frame=double(self.get_frame(i));
-            d_max=max(max(abs(frame)));
+            z_slice=double(self.get_z_slice(i));
+            d_max=max(max(abs(z_slice)));
         end  % max_abs
         
         % ---------------------------------------------------------------------
         function d_90=abs_90(self,i)
             % d_90 is a double, regardless the type of self.data
-            frame=abs(double(self.get_frame(i)));
-            d_90=lapwing.quantile_mine(frame(:),0.9);
+            z_slice=abs(double(self.get_z_slice(i)));
+            d_90=lapwing.quantile_mine(z_slice(:),0.9);
         end  % five_95
         
         % ---------------------------------------------------------------------

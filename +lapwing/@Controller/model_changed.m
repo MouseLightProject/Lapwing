@@ -33,22 +33,22 @@ set(self.colorbar_axes_h,'YLim',[cb_min cb_max]);
 %                              cb_max-0.5*cb_increment]);
 set(self.colorbar_h,'YData',[cb_min cb_max]);
                            
-% % reset the frame index
-% self.frame_index=1;
+% % reset the z_slice index
+% self.z_slice_index=1;
 
-% prepare the axes to hold the frame
-indexed_frame=self.indexed_frame;
-[n_row,n_col]=size(indexed_frame);
+% prepare the axes to hold the z_slice
+indexed_z_slice=self.indexed_z_slice;
+[n_row,n_col]=size(indexed_z_slice);
 set(self.image_axes_h,'XLim',[0.5,n_col+0.5],...
                       'YLim',[0.5,n_row+0.5]);
 
-% set the image to the current frame
+% set the image to the current z_slice
 if ~isempty(self.image_h) ,
   delete(self.image_h)
 end  
 self.image_h = ...
   image('Parent',self.image_axes_h,...
-        'CData',indexed_frame,...
+        'CData',indexed_z_slice,...
         'SelectionHighlight','off',...
         'ButtonDownFcn',@(~,~)(self.mouse_button_down_in_image()));      
  
@@ -56,7 +56,7 @@ self.image_h = ...
 % % stored in the model!!
 % self.rois_changed_in_model();
       
-% update the frame counter stuff
+% update the z_slice counter stuff
 if ~isempty(self.model.fs) && isfinite(self.model.fs)
   FPS_edit_string=sprintf('%6.2f',self.model.fs);
 else
@@ -64,8 +64,8 @@ else
 end  
 set(self.FPS_edit_h,'String',FPS_edit_string);
 set(self.z_index_edit_h,'String',sprintf('%d',self.z_index));
-n_frame=self.model.z_slice_count;
-set(self.of_z_slice_count_text_h,'String',sprintf(' of %d',n_frame));
+n_z_slice=self.model.z_slice_count;
+set(self.of_z_slice_count_text_h,'String',sprintf(' of %d',n_z_slice));
 %of_z_slice_count_text_extent=get(self.of_z_slice_count_text_h,'Extent');
 %of_z_slice_count_text_position=get(self.of_z_slice_count_text_h,'Position');
 %pos_new=[of_z_slice_count_text_position(1:2) of_z_slice_count_text_extent(3:4)];
@@ -102,9 +102,9 @@ set(self.ninety_symmetric_menu_h,'enable',on_iff(a_video_is_open));
 %set(self.open_rois_menu_h,'enable',on_iff(a_video_is_open));
 set(self.to_start_button_h,'enable',on_iff(a_video_is_open));
 set(self.play_backward_button_h,'enable',on_iff(a_video_is_open));
-set(self.frame_backward_button_h,'enable',on_iff(a_video_is_open));
+set(self.z_slice_backward_button_h,'enable',on_iff(a_video_is_open));
 set(self.stop_button_h,'enable',on_iff(a_video_is_open));
-set(self.frame_forward_button_h,'enable',on_iff(a_video_is_open));
+set(self.z_slice_forward_button_h,'enable',on_iff(a_video_is_open));
 set(self.play_forward_button_h,'enable',on_iff(a_video_is_open));
 set(self.to_end_button_h,'enable',on_iff(a_video_is_open));
 %set(self.mutation_menu_h,'enable',on_iff(a_video_is_open));
