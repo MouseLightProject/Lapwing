@@ -20,7 +20,7 @@ if any(abs(r_mean)>0.1)
 end
 
 % Get the center of the image viewport.
-[xl,yl]=self.view.get_image_viewport();
+[xl,yl]=self.get_image_viewport();
 r_center=[mean(xl);mean(yl)];
   
 % The new ROI will be at the center.

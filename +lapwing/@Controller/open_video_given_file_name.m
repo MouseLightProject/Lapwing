@@ -7,12 +7,12 @@ function open_video_given_file_name(self,filename)
 filename_local=[base_name ext];
 
 % load the optical data
-self.view.hourglass()
+self.hourglass()
 try
   %self.model=lapwing.Model();  % now done during controller construction
   self.model.open_video_given_file_name(filename);
 catch err
-  self.view.unhourglass();
+  self.unhourglass();
   if strcmp(err.identifier,'MATLAB:imagesci:imfinfo:whatFormat')
     errordlg(sprintf('Unable to determine file format of %s', ...
                      filename_local),...
@@ -43,12 +43,12 @@ catch err
 end
 
 % update the view to match the changed model
-self.view.newly_opened_file();
+self.newly_opened_file();
 
 % % set self
 % self.card_birth_roi_next=1;
 
 % OK, we're done.
-self.view.unhourglass()
+self.unhourglass()
 
 end

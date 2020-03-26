@@ -1,4 +1,4 @@
 function delete(self)
-  self.view=[];
-  self.model=[];
+  %self.controller=[];
+  self.model=[];  % this is not necessary
 end

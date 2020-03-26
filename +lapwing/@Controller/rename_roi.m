@@ -1,7 +1,7 @@
 function rename_roi(self)
 
 % get the current label string
-this_label_string=self.view.get_selected_roi_label();
+this_label_string=self.get_selected_roi_label();
 
 % throw up the dialog box
 new_label_string=...
@@ -18,6 +18,6 @@ end
 new_label_string=new_label_string{1};
 
 % if new value is not taken, change label
-self.view.set_selected_roi_label(new_label_string);
+self.set_selected_roi_label(new_label_string);
 
 end

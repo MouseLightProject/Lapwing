@@ -48,7 +48,6 @@ set(self.image_h,'Selected','off');
 % ungray the rename, delete roi menus
 set(self.rename_roi_menu_h,'Enable','on');  
 set(self.delete_roi_menu_h,'Enable','on');
-set(self.cut_menu_h,'Enable','on');
 set(self.copy_menu_h,'Enable','on');
 % new ROI selected 
 self.selected_roi_index=new_selected_roi_index;

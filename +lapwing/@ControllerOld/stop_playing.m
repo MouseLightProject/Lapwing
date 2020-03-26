@@ -1,6 +1,6 @@
 function stop_playing(self)
 
-self.stop_button_hit=true;
+self.view.stop_playing();
 
 end
 

@@ -1,8 +1,8 @@
 function motion_correct(self)
 
-self.view.hourglass();
+self.hourglass();
 self.model.motion_correct();
-self.view.model_data_changed();
-self.view.unhourglass();
+self.model_data_changed();
+self.unhourglass();
 
 end

@@ -1,6 +1,6 @@
 function toggle_show_overlay(self)
 
-self.view.toggle_show_overlay();
+self.set_show_overlay(~self.show_overlay);
 
 end
 

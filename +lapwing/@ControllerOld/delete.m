@@ -1,4 +1,4 @@
 function delete(self)
-  self.controller=[];
+  self.view=[];
   self.model=[];
 end

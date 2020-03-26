@@ -16,6 +16,6 @@ self.model.overlay_file=Overlay_file_reader(full_filename);
 % end
 
 % notify the view
-self.view.new_overlay();
+self.new_overlay();
 
 end

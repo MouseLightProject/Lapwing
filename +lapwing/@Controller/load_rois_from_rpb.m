@@ -16,7 +16,7 @@ catch  %#ok
 end
 
 % notify the view
-self.view.all_new_rois();
+self.all_new_rois();
 
 % modify self as needed
 n_rois=self.model.n_rois;
