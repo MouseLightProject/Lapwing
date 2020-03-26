@@ -693,7 +693,7 @@ classdef Controller < handle
             if nargin>=1 ,
                 if ischar(varargin{1}) ,
                     file_name = varargin{1} ;
-                    self.open_video_given_file_name(file_name) ;
+                    self.open_file_given_file_name(file_name) ;
                 end
             end
         end  % constructor
@@ -1016,6 +1016,61 @@ classdef Controller < handle
                     'String',sprintf('%d',self.z_index)) ;
             end            
         end
+        
+        function handle_colorbar_menus(self, tag)
+            % switch on the tag
+            switch(tag)
+                case 'pixel_data_type_min_max'
+                    self.model.set_colorbar_bounds(tag) ;
+                case 'min_max'
+                    self.hourglass();
+                    self.model.set_colorbar_bounds(tag) ;
+                    self.unhourglass();
+                case 'five_95'
+                    self.hourglass();
+                    self.model.set_colorbar_bounds(tag) ;
+                    self.unhourglass();
+                case 'abs_max'
+                    self.hourglass();
+                    self.model.set_colorbar_bounds(tag) ;
+                    self.unhourglass();
+                case 'ninety_symmetric'
+                    % need to fix this, since what it does now is useless
+                    self.hourglass();
+                    self.model.set_colorbar_bounds(tag) ;
+                    self.unhourglass();
+                case 'colorbar_edit_bounds'
+                    % get the current y min and y max strings
+                    cb_min_string = self.model.colorbar_min_string ;
+                    cb_max_string = self.model.colorbar_max_string ;
+                    % throw up the dialog box
+                    bounds=inputdlg({ 'Colorbar Maximum:' , 'Colorbar Minimum:' },...
+                        'Edit Colorbar Bounds...',...
+                        1,...
+                        { cb_max_string , cb_min_string });
+                    if ~isempty(bounds) ,
+                        self.hourglass();
+                        self.model.set_colorbar_bounds('manual', bounds) ;
+                        self.unhourglass();
+                    end
+            end
+
+            self.hourglass();
+            
+            % change the axes and colorbar
+            cb_min = self.model.colorbar_min ;
+            cb_max = self.model.colorbar_max ;
+            set(self.colorbar_axes_h, 'YLim', [cb_min cb_max]) ;
+            set(self.colorbar_h, 'YData', [cb_min cb_max]) ;
+
+            % recalculate indexed_z_slice, set in figure
+            if self.model.is_a_file_open ,
+                % change the displayed image
+                set(self.image_h, 'CData', self.model.indexed_z_slice) ;
+            end
+            
+            self.unhourglass();            
+        end  % method
         
     end  % methods
     

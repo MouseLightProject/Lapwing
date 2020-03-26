@@ -7,7 +7,7 @@ function close(self)
 %                                           % the MVC objects hang around
 % clear fpj jw jcb;
 
-delete(self.figure_h);
-self.figure_h=[];
+delete(self.figure_h) ;
+self.figure_h = [] ;
 
 end

@@ -73,7 +73,7 @@ set(self.of_z_slice_count_text_h,'String',sprintf(' of %d',n_z_slice));
 
 % Compute some things that effect what's enabled and what's not
 %at_least_one_roi_exists=~isempty(self.model.roi);
-a_video_is_open=self.model.a_video_is_open;
+is_a_file_open = self.model.is_a_file_open ;
 
 % need to set image erase mode to none, since now there are no 
 % more lines in front of the image
@@ -87,26 +87,26 @@ a_video_is_open=self.model.a_video_is_open;
 %set(self.move_all_button_h,'Enable',on_iff(at_least_one_roi_exists));  
 
 % enable buttons, menus that need enabling
-set(self.z_index_edit_h,'enable',on_iff(a_video_is_open));
-set(self.FPS_edit_h,'enable',on_iff(a_video_is_open));
+set(self.z_index_edit_h,'enable',on_iff(is_a_file_open));
+set(self.FPS_edit_h,'enable',on_iff(is_a_file_open));
 %set(self.elliptic_roi_button_h,'enable',on_iff(a_video_is_open));
 %set(self.rect_roi_button_h,'enable',on_iff(a_video_is_open));
 %set(self.polygonal_roi_button_h,'enable',on_iff(a_video_is_open));
-set(self.zoom_button_h,'enable',on_iff(a_video_is_open));
-set(self.pixel_data_type_min_max_menu_h,'enable',on_iff(a_video_is_open));
-set(self.min_max_menu_h,'enable',on_iff(a_video_is_open));
-set(self.five_95_menu_h,'enable',on_iff(a_video_is_open));
-set(self.abs_max_menu_h,'enable',on_iff(a_video_is_open));
-set(self.ninety_symmetric_menu_h,'enable',on_iff(a_video_is_open));
+set(self.zoom_button_h,'enable',on_iff(is_a_file_open));
+set(self.pixel_data_type_min_max_menu_h,'enable',on_iff(is_a_file_open));
+set(self.min_max_menu_h,'enable',on_iff(is_a_file_open));
+set(self.five_95_menu_h,'enable',on_iff(is_a_file_open));
+set(self.abs_max_menu_h,'enable',on_iff(is_a_file_open));
+set(self.ninety_symmetric_menu_h,'enable',on_iff(is_a_file_open));
 %set(self.rois_menu_h,'enable',on_iff(a_video_is_open));
 %set(self.open_rois_menu_h,'enable',on_iff(a_video_is_open));
-set(self.to_start_button_h,'enable',on_iff(a_video_is_open));
-set(self.play_backward_button_h,'enable',on_iff(a_video_is_open));
-set(self.z_slice_backward_button_h,'enable',on_iff(a_video_is_open));
-set(self.stop_button_h,'enable',on_iff(a_video_is_open));
-set(self.z_slice_forward_button_h,'enable',on_iff(a_video_is_open));
-set(self.play_forward_button_h,'enable',on_iff(a_video_is_open));
-set(self.to_end_button_h,'enable',on_iff(a_video_is_open));
+set(self.to_start_button_h,'enable',on_iff(is_a_file_open));
+set(self.play_backward_button_h,'enable',on_iff(is_a_file_open));
+set(self.z_slice_backward_button_h,'enable',on_iff(is_a_file_open));
+set(self.stop_button_h,'enable',on_iff(is_a_file_open));
+set(self.z_slice_forward_button_h,'enable',on_iff(is_a_file_open));
+set(self.play_forward_button_h,'enable',on_iff(is_a_file_open));
+set(self.to_end_button_h,'enable',on_iff(is_a_file_open));
 %set(self.mutation_menu_h,'enable',on_iff(a_video_is_open));
 %set(self.motion_correct_menu_h,'enable',on_iff(a_video_is_open));
 %set(self.load_overlay_menu_h,'enable',on_iff(a_video_is_open));

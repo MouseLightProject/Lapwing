@@ -1,4 +1,4 @@
-function set_colorbar_bounds_from_strings(self,cb_min_string,cb_max_string)
+function set_colorbar_bounds_from_strings(self, cb_min_string, cb_max_string)
     
     % Set the view colorbar bounds given max and min values in strings.  No
     % checking is done to make sure the string values are sane.  Note that in
@@ -15,15 +15,15 @@ function set_colorbar_bounds_from_strings(self,cb_min_string,cb_max_string)
     % change the axes and colorbar
     cb_min = self.model.colorbar_min ;
     cb_max = self.model.colorbar_max ;
-    set(self.colorbar_axes_h,'YLim',[cb_min cb_max]);
+    set(self.colorbar_axes_h, 'YLim', [cb_min cb_max]) ;
     % cb_increment=(cb_max-cb_min)/256;
     % set(self.colorbar_h,'YData',[cb_min+0.5*cb_increment...
     %                              cb_max-0.5*cb_increment]);
-    set(self.colorbar_h,'YData',[cb_min cb_max]);
+    set(self.colorbar_h, 'YData', [cb_min cb_max]) ;
         
     % recalculate indexed_z_slice, set in figure
-    if self.model.a_video_is_open ,
+    if self.model.is_a_file_open ,
         % change the displayed image
-        set(self.image_h,'CData',self.model.indexed_z_slice);
+        set(self.image_h, 'CData', self.model.indexed_z_slice) ;
     end
 end
