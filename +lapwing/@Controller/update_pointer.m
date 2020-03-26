@@ -4,7 +4,7 @@ persistent above_image;
 
 % init above_image
 if isempty(above_image)
-  mode=self.mode;
+  mode=self.model.mode;
   if strcmp(mode,'select') || strcmp(mode,'move_all')
     above_image=false;
     set(self.figure_h,'Pointer','arrow');

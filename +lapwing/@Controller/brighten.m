@@ -1,7 +1,4 @@
 function brighten(self)
-
-cmap=get(self.figure_h,'Colormap');
-new_cmap=brighten(cmap,0.1);
-set(self.figure_h,'Colormap',new_cmap);
-
+    self.model.brighten() ;
+    set(self.figure_h,'Colormap',self.model.cmap) ;
 end

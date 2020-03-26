@@ -25,8 +25,8 @@ set(self.figure_h,'name',title_string);
 % self.colorbar_max=str2double(self.colorbar_max_string);
  
 % change the colorbar
-cb_min=self.colorbar_min;
-cb_max=self.colorbar_max;
+cb_min=self.model.colorbar_min;
+cb_max=self.model.colorbar_max;
 set(self.colorbar_axes_h,'YLim',[cb_min cb_max]);
 % cb_increment=(cb_max-cb_min)/256;
 % set(self.colorbar_h,'YData',[cb_min+0.5*cb_increment...
@@ -37,7 +37,7 @@ set(self.colorbar_h,'YData',[cb_min cb_max]);
 % self.z_slice_index=1;
 
 % prepare the axes to hold the z_slice
-indexed_z_slice=self.indexed_z_slice;
+indexed_z_slice = self.model.indexed_z_slice ;
 [n_row,n_col]=size(indexed_z_slice);
 set(self.image_axes_h,'XLim',[0.5,n_col+0.5],...
                       'YLim',[0.5,n_row+0.5]);
@@ -63,8 +63,8 @@ else
   FPS_edit_string='   ?  ';
 end  
 set(self.FPS_edit_h,'String',FPS_edit_string);
-set(self.z_index_edit_h,'String',sprintf('%d',self.z_index));
-n_z_slice=self.model.z_slice_count;
+set(self.z_index_edit_h,'String',sprintf('%d',self.model.z_index));
+n_z_slice = self.model.z_slice_count ;
 set(self.of_z_slice_count_text_h,'String',sprintf(' of %d',n_z_slice));
 %of_z_slice_count_text_extent=get(self.of_z_slice_count_text_h,'Extent');
 %of_z_slice_count_text_position=get(self.of_z_slice_count_text_h,'Position');

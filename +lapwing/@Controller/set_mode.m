@@ -2,7 +2,7 @@ function set_mode(self,new_mode)
 
 % need to remember the old mode so that we can
 % uncheck that menu item
-old_mode=self.mode;
+old_mode=self.model.mode;
 
 % if there's a polygonal ROI draw in progress, cancel it
 if strcmp(old_mode,'polygonal_roi') && ~strcmp(new_mode,'polygonal_roi')
@@ -23,6 +23,6 @@ new_button_h=...
 set(new_button_h,'value',1);
 
 % set the chosen mode
-self.mode=new_mode;
+self.model.mode=new_mode;
 
 end

@@ -75,18 +75,22 @@ classdef Controller < handle
 %         overlay_menu_h
 %         show_overlay_menu_h
         
-        z_index
-        % this holds the _playback_ z_slice rate, in z_slices/sec
-        stop_button_hit
-        % this is the current selection mode
-        mode
-        cmap_name
-        % colorbar_min and colorbar_max are constrained to be integers
-        colorbar_max_string
-        colorbar_min_string
-        colorbar_min  % the colorbar min, derived from cb_min_string,
-        % dependent in spirit
-        colorbar_max  % the colorbar max, derived from cb_min_string,
+%         z_index
+%         % this holds the _playback_ z_slice rate, in z_slices/sec
+%         stop_button_hit
+%         % this is the current selection mode
+%         mode
+%         cmap_name
+%         % colorbar_min and colorbar_max are constrained to be integers
+%         colorbar_max_string
+%         colorbar_min_string
+%         colorbar_min  % the colorbar min, derived from cb_min_string,
+%         % dependent in spirit
+%         colorbar_max  % the colorbar max, derived from cb_min_string,
+        
+        
+        
+        
         % dependent in spirit
         % roi state
         %selected_roi_index
@@ -114,18 +118,11 @@ classdef Controller < handle
 %         FPS_edit_height
     end  % properties
     
-    properties (Dependent=true)
-        indexed_z_slice
-    end
-    
     methods
         function self = Controller(varargin)
             % Leave the model empty until we load data
             self.model = lapwing.Model() ;
                         
-            % Set defaults
-            cmap_name='gray'; 
-            
             % get the screen size so we can position the figure window
             root_units=get(0,'Units');
             set(0,'Units','pixels');
@@ -170,7 +167,7 @@ classdef Controller < handle
                 'Visible','on', ...
                 'Name','Lapwing',...
                 'NumberTitle','off',...
-                'Colormap',eval(sprintf('%s(256)',cmap_name)),...
+                'Colormap',eval(sprintf('%s(256)',self.model.cmap_name)),...
                 'DockControls','off', ...
                 'PaperPositionMode','auto',...
                 'InvertHardcopy','off',...
@@ -215,11 +212,11 @@ classdef Controller < handle
             % %    @(src,event)(self.handle_focus_lost()));
             % clear fpj jw jcb;
             
-            % figure out the colorbar min and colorbar max
-            colorbar_min_string='0';
-            colorbar_max_string='255';
-            colorbar_min=str2double(colorbar_min_string);
-            colorbar_max=str2double(colorbar_max_string);
+%             % figure out the colorbar min and colorbar max
+%             colorbar_min_string='0';
+%             colorbar_max_string='255';
+%             colorbar_min=str2double(colorbar_min_string);
+%             colorbar_max=str2double(colorbar_max_string);
             
             % create the colorbar axes and the colorbar image
             self.colorbar_axes_h = ...
@@ -229,7 +226,7 @@ classdef Controller < handle
                 'Visible','on',...
                 'Box','on',...
                 'XLim',[0.5 1.5],...
-                'YLim',[colorbar_min colorbar_max],...
+                'YLim',[self.model.colorbar_min self.model.colorbar_max],...
                 'XTick',[],...
                 'YAxisLocation','right', ...
                 'Layer','top'); 
@@ -238,7 +235,7 @@ classdef Controller < handle
                 'CData',(0:255)',...
                 'Tag','colorbar_h',...
                 'XData',[1 1],...
-                'YData',[colorbar_min colorbar_max]); 
+                'YData',[self.model.colorbar_min self.model.colorbar_max]); 
             
             % create the image axes and the image
             self.image_axes_h = ...
@@ -676,17 +673,6 @@ classdef Controller < handle
 %                 'Callback',@(~,~)(self.toggle_show_overlay()),...
 %                 'Enable','off');
             
-            % Set up the view state variables
-            self.z_index=[];
-            % this holds the _playback_ z_slice rate, in z_slices/sec
-            self.stop_button_hit = false ;
-            % this is the current selection mode
-            %self.mode='elliptic_roi';
-            self.cmap_name=cmap_name;
-            self.colorbar_max_string=colorbar_max_string;
-            self.colorbar_min_string=colorbar_min_string;
-            self.colorbar_max=colorbar_max;
-            self.colorbar_min=colorbar_min;
 %             % roi state
 %             self.selected_roi_index=zeros(0,1);
 %             self.hide_rois=false;
@@ -716,16 +702,7 @@ classdef Controller < handle
             xl=get(self.image_axes_h,'xlim');
             yl=get(self.image_axes_h,'ylim');
         end
-        
-        function indexed_z_slice=get.indexed_z_slice(self)
-            % Get the current indexed_z_slice, based on model, z_index,
-            % colorbar_min, and colorbar_max.
-            z_slice=double(self.model.get_z_slice(self.z_index));
-            cb_min=self.colorbar_min;
-            cb_max=self.colorbar_max;
-            indexed_z_slice=uint8(round(255*(z_slice-cb_min)/(cb_max-cb_min)));
-        end
-        
+                
         %     function cb_min=get.colorbar_min(self)
         %       cb_min=str2double(self.cb_min_string);
         %     end

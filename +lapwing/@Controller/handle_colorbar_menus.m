@@ -1,7 +1,7 @@
-function handle_colorbar_menus(self,tag)
+function handle_colorbar_menus(self, tag)
 
 % switch on the tag
-i=self.z_index;
+i = self.model.z_index ;
 switch(tag)
   case 'pixel_data_type_min_max'
     [d_min,d_max]=self.model.pixel_data_type_min_max();
@@ -32,8 +32,8 @@ switch(tag)
     self.set_colorbar_bounds_from_numbers(cb_min,cb_max);         
   case 'colorbar_edit_bounds'
     % get the current y min and y max strings
-    cb_min_string=self.colorbar_min_string;
-    cb_max_string=self.colorbar_max_string;
+    cb_min_string=self.model.colorbar_min_string;
+    cb_max_string=self.model.colorbar_max_string;
     % throw up the dialog box
     bounds=inputdlg({ 'Colorbar Maximum:' , 'Colorbar Minimum:' },...
                     'Edit Colorbar Bounds...',...
