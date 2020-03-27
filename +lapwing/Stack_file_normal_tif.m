@@ -5,10 +5,9 @@ classdef Stack_file_normal_tif < handle
         original_libtiff_warning_state_  % used to restore libtiff warning state after we close a tiff file        
         original_libtiff_error_as_warning_state_
         n_frame_
-        bits_per_pel_
+        data_type_
         n_row_
         n_col_
-        rate_
     end  % properties
         
     methods
@@ -26,9 +25,9 @@ classdef Stack_file_normal_tif < handle
                       'Stack_file_normal_tif only supports 8- and 16-bit grayscale videos.');
             end
             if isa(frame,'uint8')
-                self.bits_per_pel_=8;
+                self.data_type_='uint8';
             elseif isa(frame,'uint16')
-                self.bits_per_pel_=16;
+                self.data_type_='uint16';
             else
                 error('Stack_file:UnsupportedPixelType', ...
                       'Stack_file_normal_tif only supports 8- and 16-bit grayscale videos.');
@@ -37,7 +36,6 @@ classdef Stack_file_normal_tif < handle
             self.tiff_object_.close();
             self.tiff_object_ = [] ;
             self.tiff_object_=Tiff(file_name,'r');
-            self.rate_=NaN;  % Hz, NaN signifies frame rate is unknown
         end  % constructor method
 
         function delete(self)
@@ -47,8 +45,8 @@ classdef Stack_file_normal_tif < handle
             self.tiff_object_ = [] ;
         end
         
-        function result = bits_per_pel(self)
-            result = self.bits_per_pel_ ;
+        function result = data_type(self)
+            result = self.data_type_ ;
         end
         
         function result = n_row(self)
@@ -63,10 +61,6 @@ classdef Stack_file_normal_tif < handle
             result = self.n_frame_ ;
         end
 
-        function result = rate(self)
-            result = self.rate_ ;
-        end
-        
         function frame=get_frame(self,i_frame)
             self.tiff_object_.setDirectory(i_frame);
             frame=self.tiff_object_.read();

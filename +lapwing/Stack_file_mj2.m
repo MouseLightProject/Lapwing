@@ -13,8 +13,13 @@ classdef Stack_file_mj2 < handle
             self.vr_=[] ;
         end
         
-        function result = bits_per_pel(self)
-            result = get(self.vr_,'BitsPerPixel') ;
+        function result = data_type(self)
+            bpp = get(self.vr_,'BitsPerPixel') ;
+            if bpp==16 ,
+                result = 'uint16' ;
+            else
+                result = 'uint8' ;
+            end
         end
         
         function result = n_row(self)

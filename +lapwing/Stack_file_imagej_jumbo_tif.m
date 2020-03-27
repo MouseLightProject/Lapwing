@@ -5,10 +5,9 @@ classdef Stack_file_imagej_jumbo_tif < handle
         frame_stride_  % in bytes, frame i (one-based) starts at file offset header_length_ + (i-1) * frame_stride_
         frame_size_
         n_frame_
-        bits_per_pel_
+        %data_type_
         n_row_
         n_col_
-        rate_
         bytes_per_pel_
         pels_per_frame_
         fid_
@@ -31,13 +30,12 @@ classdef Stack_file_imagej_jumbo_tif < handle
                 error('Unable to open a multi-channel ImageJ "jumbo" TIFF file') ;
             end
             self.n_frame_ = stack_dims(3) ;
-            self.bits_per_pel_ = tiff_header.bits ;
+            data_type = tiff_header.bits ;
             self.n_row_ = tiff_header.width ;
             self.n_col_ = tiff_header.height ;            
-            self.rate_ = nan ;  % Hz, NaN signifies frame rate is unknown
             self.header_length_ = tiff_header.StripOffsets ;
             self.pels_per_frame_ = self.n_row * self.n_col ;
-            self.bytes_per_pel_ = ceil(self.bits_per_pel_/8) ;    
+            self.bytes_per_pel_ = ceil(data_type/8) ;    
             if self.bytes_per_pel_==2 ,
                 self.pixel_class_name_ = 'uint16' ;
             else
@@ -58,8 +56,8 @@ classdef Stack_file_imagej_jumbo_tif < handle
             self.fid_ = [] ;
         end
         
-        function result = bits_per_pel(self)
-            result = self.bits_per_pel_ ;
+        function result = data_type(self)
+            result = self.pixel_class_name_ ;
         end
         
         function result = n_row(self)
@@ -74,10 +72,6 @@ classdef Stack_file_imagej_jumbo_tif < handle
             result = self.n_frame_ ;
         end
 
-        function result = rate(self)
-            result = self.rate_ ;
-        end
-        
         function frame=get_frame(self,i_frame)
             % - Seek file to beginning of chunk
             offset = self.header_length_ + (i_frame-1) * self.frame_stride_ ;

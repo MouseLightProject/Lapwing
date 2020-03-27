@@ -124,7 +124,7 @@ classdef Model < handle
             self.file_name_ = file_name ;
             
             % determine the colorbar bounds
-            [data_min,data_max] = lapwing.pixel_data_type_min_max(self.file_.bits_per_pel) ;
+            [data_min,data_max] = lapwing.pixel_data_type_min_max(self.file_.data_type) ;
             self.colorbar_min_string_ = sprintf('%d',data_min) ;
             self.colorbar_max_string_ = sprintf('%d',data_max) ;
             self.colorbar_min_ = str2double(self.colorbar_min_string) ;
@@ -271,7 +271,7 @@ classdef Model < handle
         function set_colorbar_bounds(self, method, bounds)            
             switch(method)
                 case 'pixel_data_type_min_max'
-                    [d_min, d_max] = lapwing.pixel_data_type_min_max(self.file_.bits_per_pel) ;
+                    [d_min, d_max] = lapwing.pixel_data_type_min_max(self.file_.data_type) ;
                     self.set_colorbar_bounds_from_numbers(d_min,d_max);
                 case 'min_max'
                     z_slice = double(self.z_slice) ;

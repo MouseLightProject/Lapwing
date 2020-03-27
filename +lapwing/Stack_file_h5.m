@@ -3,7 +3,7 @@ classdef Stack_file_h5 < handle
     properties
         file_path_
         dataset_path_
-        bits_per_pel_
+        data_type_
         n_row_
         n_col_
         n_frame_     
@@ -22,8 +22,12 @@ classdef Stack_file_h5 < handle
             dataset_name = info.Datasets.Name ;
             dataset_path = ['/' dataset_name] ;
             dataset_info = h5info(file_path, dataset_path) ;
-            data_type = dataset_info.Datatype.Type ;
-            if ~isequal(data_type, 'H5T_STD_U16LE') ,
+            h5_data_type = dataset_info.Datatype.Type ;
+            if isequal(h5_data_type, 'H5T_STD_U16LE') ,
+                self.data_type_ = 'uint16' ;
+            elseif isequal(h5_data_type, 'H5T_IEEE_F32LE') ,
+                self.data_type_ = 'single' ;
+            else
                 error('Stack_file:UnsupportedPixelType', ...
                       'Stack_file_h5 only supports 16-bit grayscale stacks.');                
             end
@@ -50,14 +54,13 @@ classdef Stack_file_h5 < handle
             self.n_row_ = shape_ijk(2) ;
             self.n_col_ = shape_ijk(1) ;
             self.n_frame_ = shape_ijk(3) ;
-            self.bits_per_pel_ = 16 ;
         end  % constructor method
 
         function delete(self)  %#ok<INUSD>
         end
         
-        function result = bits_per_pel(self)
-            result = self.bits_per_pel_ ;
+        function result = data_type(self)
+            result = self.data_type_ ;
         end
         
         function result = n_row(self)

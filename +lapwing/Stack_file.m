@@ -35,8 +35,8 @@ classdef Stack_file < handle
             self.typed_file_ = [] ;
         end
         
-        function result = bits_per_pel(self)
-            result = self.typed_file_.bits_per_pel() ;
+        function result = data_type(self)
+            result = self.typed_file_.data_type() ;
         end
         
         function result = n_row(self)
