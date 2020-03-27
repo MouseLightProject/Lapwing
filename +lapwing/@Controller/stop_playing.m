@@ -1,4 +1,3 @@
 function stop_playing(self)
-    self.model.stop_button_hit = true ;
+    self.model.was_stop_button_hit = true ;
 end
-

@@ -57,11 +57,7 @@ self.image_h = ...
 % self.rois_changed_in_model();
       
 % update the z_slice counter stuff
-if ~isempty(self.model.fs) && isfinite(self.model.fs)
-  FPS_edit_string=sprintf('%6.2f',self.model.fs);
-else
-  FPS_edit_string='   ?  ';
-end  
+FPS_edit_string=sprintf('%g',self.model.fps) ;
 set(self.FPS_edit_h,'String',FPS_edit_string);
 set(self.z_index_edit_h,'String',sprintf('%d',self.model.z_index));
 n_z_slice = self.model.z_slice_count ;

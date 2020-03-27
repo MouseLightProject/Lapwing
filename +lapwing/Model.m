@@ -3,17 +3,17 @@ classdef Model < handle
     properties (Access = private)
         cmap_name_
         cmap_
-        %fps_
+        fps_
     end
     
     properties
-        stop_button_hit
+        was_stop_button_hit
         z_index
     end
     
     properties (SetAccess = private)
-        t0
-        dt
+        %t0
+        %dt
         file_name  % the name of the video file currently open
         file  % the handle of a VideoFile object, the current file (or empty)
         
@@ -29,14 +29,14 @@ classdef Model < handle
     end  % properties
     
     properties (Dependent=true)
-        fs  % Hz, sampling rate for playback & export, possibly different from
+        fps  % Hz, sampling rate for playback & export, possibly different from
         % that in file
         n_rows
         n_cols
         z_slice_count  % number of time samples
-        tl  % 2x1 matrix holding min, max time
+        %tl  % 2x1 matrix holding min, max time
         %n_rois;
-        t  % a complete timeline for all z_slices
+        %t  % a complete timeline for all z_slices
         is_a_file_open  % true iff a stack is currently open
         z_slice
         indexed_z_slice
@@ -48,15 +48,15 @@ classdef Model < handle
         function self=Model()
             self.file_name='';
             self.file=[];
-            self.t0=[];  % s
-            self.dt=[];  % s
+            %self.t0=[];  % s
+            %self.dt=[];  % s
             %       self.roi=struct('border',cell(0,1), ...
             %                       'label',cell(0,1));
             %self.overlay_file=[];
             
             % Set up the view state variables
             self.z_index=[] ;
-            %self.fps_ = 20 ;  % for playback
+            self.fps_ = 20 ;  % for playback
             % this holds the _playback_ z_slice rate, in z_slices/sec
             % this is the current selection mode
             %self.mode='elliptic_roi';
@@ -73,7 +73,7 @@ classdef Model < handle
             self.colorbar_min=colorbar_min;            
             
             self.mode = 'zoom' ;
-            self.stop_button_hit = false ;
+            self.was_stop_button_hit = false ;
         end  % function
         
         function delete(self)
@@ -82,21 +82,8 @@ classdef Model < handle
             end
         end            
         
-        function t=get.t(self)
-            if ~isempty(self.t0) && ~isempty(self.dt) && ~isempty(self.z_slice_count)
-                t=self.t0+self.dt*(0:(self.z_slice_count-1))';
-            else
-                t=[];
-            end
-        end
-        
-        
-        function fs=get.fs(self)
-            if isempty(self.dt)
-                fs=[];
-            else
-                fs=1/self.dt;
-            end
+        function result = get.fps(self)
+            result = self.fps_ ;
         end
         
         
@@ -131,27 +118,7 @@ classdef Model < handle
         %       n_roi=length(self.roi);
         %     end
         
-        
-        function tl=get.tl(self)
-            t0=self.t0;
-            dt=self.dt;
-            if ~isempty(self.t0) && ~isempty(self.dt)
-                n_z_slice=self.z_slice_count;
-                if isempty(n_z_slice) || (n_z_slice==0) ,
-                    tl=[];
-                else
-                    tl=t0+[0 dt*(n_z_slice-1)];
-                end
-            else
-                tl=[];
-            end
-        end
-        
-        
-        function set.dt(self,dt)
-            self.dt=dt;
-        end
-        
+                
         %     function sync_t(self)
         %       t0=self.t0;
         %       dt=self.dt;
@@ -160,8 +127,10 @@ classdef Model < handle
         %     end
         
         
-        function set.fs(self,fs)
-            self.dt=1/fs;
+        function set.fps(self, new_value)
+            if isnumeric(new_value) && isreal(new_value) && isscalar(new_value) && new_value>0 ,
+                self.fps_ = double(new_value) ;
+            end
         end       
         
         
@@ -242,19 +211,14 @@ classdef Model < handle
             %filename_local=[base_name ext];
             
             % load the optical data
-            file=lapwing.Video_file(file_name);
-            
-            % OK, now actually store the data in ourselves
-            % make up a t0, get dt
-            self.t0=0;
-            self.dt=file.dt;  % s
-            
+            file = lapwing.Video_file(file_name) ;
+                        
             % set the model
             self.file=file;
             self.file_name=file_name;
             
             % determine the colorbar bounds
-            [data_min,data_max]=self.pixel_data_type_min_max();
+            [data_min,data_max] = lapwing.pixel_data_type_min_max(self.file.bits_per_pel) ;
             self.colorbar_min_string=sprintf('%d',data_min);
             self.colorbar_max_string=sprintf('%d',data_max);
             self.colorbar_min=str2double(self.colorbar_min_string);
@@ -263,29 +227,16 @@ classdef Model < handle
             % reset the z_slice index
             self.z_index=1;
 
-            % init roi state
-            %self.selected_roi_index=zeros(0,1);
-            %self.hide_rois=false;
-            
             % set the mode to zoom
             self.mode = 'zoom' ;                        
         end  % method
         
         
         function close_file(self)
-            if ~isempty(self.file)
-                %self.file.close();
-                self.file=[];  % should close file handles
+            if ~isempty(self.file) ,
+                self.file = [] ;  % should close file handles
             end
-            self.file_name='';
-            self.t0=[];
-            self.dt=[];  % s
-            %       self.roi=struct('border',cell(0,1), ...
-            %                       'label',cell(0,1));
-            %       if ~isempty(self.overlay_file)
-            %         self.overlay_file.close();
-            %         self.overlay_file=[];
-            %       end
+            self.file_name = '' ;
         end  % method
         
         
