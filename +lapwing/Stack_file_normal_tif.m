@@ -22,7 +22,7 @@ classdef Stack_file_normal_tif < handle
             self.tiff_object_=Tiff(file_name,'r');
             frame=self.tiff_object_.read();
             if ndims(frame)>2  %#ok
-                error('Stack_file_normal_tif:UnsupportedPixelType', ...
+                error('Stack_file:UnsupportedPixelType', ...
                       'Stack_file_normal_tif only supports 8- and 16-bit grayscale videos.');
             end
             if isa(frame,'uint8')
@@ -30,7 +30,7 @@ classdef Stack_file_normal_tif < handle
             elseif isa(frame,'uint16')
                 self.bits_per_pel_=16;
             else
-                error('Stack_file_normal_tif:UnsupportedPixelType', ...
+                error('Stack_file:UnsupportedPixelType', ...
                       'Stack_file_normal_tif only supports 8- and 16-bit grayscale videos.');
             end
             [self.n_row_,self.n_col_]=size(frame);

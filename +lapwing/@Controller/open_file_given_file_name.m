@@ -1,16 +1,15 @@
-function open_file_given_file_name(self, filename)
+function open_file_given_file_name(self, file_name)
     
     % filename is a filename, can be relative or absolute
     
     % break up the file name
-    [~,base_name,ext]=fileparts(filename);
-    filename_local=[base_name ext];
+    [~, base_name, ext] = fileparts(file_name) ;
+    filename_local = [base_name ext] ;
     
     % load the optical data
     self.hourglass()
     try
-        %self.model=lapwing.Model();  % now done during controller construction
-        self.model.open_file_given_file_name(filename);
+        self.model.open_file_given_file_name(file_name) ;
     catch err
         self.unhourglass();
         if strcmp(err.identifier,'MATLAB:imagesci:imfinfo:whatFormat')
@@ -28,11 +27,11 @@ function open_file_given_file_name(self, filename)
                 filename_local),...
                 'File Error');
             return;
-        elseif strcmp(err.identifier,'VideoFile:UnableToLoad')
+        elseif strcmp(err.identifier,'Stack_file:UnableToLoad')
             errordlg(sprintf('Error opening %s.',filename_local),...
                 'File Error');
             return;
-        elseif strcmp(err.identifier,'VideoFile:UnsupportedPixelType')
+        elseif strcmp(err.identifier,'Stack_file:UnsupportedPixelType')
             errordlg(sprintf('Error opening %s: Unsupported pixel type.', ...
                 filename_local),...
                 'File Error');
@@ -44,9 +43,6 @@ function open_file_given_file_name(self, filename)
     
     % Update the view HG objects to match the model & view state
     self.update();
-    
-    % % set self
-    % self.card_birth_roi_next=1;
     
     % OK, we're done.
     self.unhourglass()    

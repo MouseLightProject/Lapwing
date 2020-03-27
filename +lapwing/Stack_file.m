@@ -11,11 +11,6 @@ classdef Stack_file < handle
             [~,~,ext] = fileparts(file_name) ;
             switch ext ,
                 case '.tif' ,
-%                     [tiff_struct, tiff_header] = lapwing.tiffread31_header(file_name) ;
-%                     tiff_tags = lapwing.tiffread31_readtags(tiff_struct, tiff_header, 1) ;
-%                     is_imagej_jumbo_tiff = ...
-%                         lapwing.IsImageJBigStack(tiff_tags, numel(tiff_header));
-%                     fclose(tiff_struct.file) ;
                     is_file_an_imagej_jumbo_tif = lapwing.is_file_an_imagej_jumbo_tif(file_name) ;
                     if  is_file_an_imagej_jumbo_tif ,
                         self.file_type_ = 'imagej_jumbo_tif' ;                        
@@ -27,6 +22,9 @@ classdef Stack_file < handle
                 case '.mj2' ,
                     self.file_type_ = 'mj2' ;
                     self.typed_file_ = lapwing.Stack_file_mj2(file_name) ;
+                case '.h5' ,
+                    self.file_type_ = 'h5' ;
+                    self.typed_file_ = lapwing.Stack_file_h5(file_name) ;
                 otherwise
                     error('Stack_file:UnableToLoad','Unable to load that file type');
             end

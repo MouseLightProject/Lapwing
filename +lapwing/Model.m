@@ -4,31 +4,26 @@ classdef Model < handle
         cmap_name_
         cmap_
         fps_
+        mode_
+        file_name_  % the name of the file currently open
+        file_  % the handle of a VideoFile object, the current file (or empty)
+        % colorbar_min and colorbar_max are constrained to be integers
+        colorbar_max_string_
+        colorbar_min_string_
+        colorbar_min_  % the colorbar min, derived from cb_min_string,
+        colorbar_max_  % the colorbar max, derived from cb_min_string,        
+        was_stop_button_hit_
+        z_index_
     end
     
-    properties
-        was_stop_button_hit
-        z_index
-    end
-    
-    properties (SetAccess = private)
-        %t0
-        %dt
+    properties (Dependent=true)
         file_name  % the name of the file currently open
         file  % the handle of a VideoFile object, the current file (or empty)
-        
-        % this holds the _playback_ z_slice rate, in z_slices/sec
-        % this is the current selection mode
-        mode
         % colorbar_min and colorbar_max are constrained to be integers
         colorbar_max_string
         colorbar_min_string
         colorbar_min  % the colorbar min, derived from cb_min_string,
-        % dependent in spirit
         colorbar_max  % the colorbar max, derived from cb_min_string,        
-    end  % properties
-    
-    properties (Dependent=true)
         fps  % Hz, sampling rate for playback & export, possibly different from
         % that in file
         n_rows
@@ -42,43 +37,36 @@ classdef Model < handle
         indexed_z_slice
         cmap_name
         cmap
+        mode
+        was_stop_button_hit
+        z_index
     end
     
     methods
         function self=Model()
-            self.file_name='';
-            self.file=[];
-            %self.t0=[];  % s
-            %self.dt=[];  % s
-            %       self.roi=struct('border',cell(0,1), ...
-            %                       'label',cell(0,1));
-            %self.overlay_file=[];
-            
-            % Set up the view state variables
-            self.z_index=[] ;
+            self.file_name_ = '' ;
+            self.file_ = [] ;
+            self.z_index_ = [] ;
             self.fps_ = 20 ;  % for playback
-            % this holds the _playback_ z_slice rate, in z_slices/sec
-            % this is the current selection mode
-            %self.mode='elliptic_roi';
-            self.cmap_name = 'gray' ; 
+            self.cmap_name_ = 'gray' ; 
             
             colorbar_min_string='0';
             colorbar_max_string='255';
             colorbar_min=str2double(colorbar_min_string);
             colorbar_max=str2double(colorbar_max_string);
             
-            self.colorbar_max_string=colorbar_max_string;
-            self.colorbar_min_string=colorbar_min_string;
-            self.colorbar_max=colorbar_max;
-            self.colorbar_min=colorbar_min;            
+            self.colorbar_max_string_ = colorbar_max_string ;
+            self.colorbar_min_string_ = colorbar_min_string ;
+            self.colorbar_max_ = colorbar_max ;
+            self.colorbar_min_ = colorbar_min ;            
             
-            self.mode = 'zoom' ;
-            self.was_stop_button_hit = false ;
+            self.mode_ = 'zoom' ;
+            self.was_stop_button_hit_ = false ;
         end  % function
         
         function delete(self)
-            if ~isempty(self.file) ,
-                self.file = [] ;  % should close file handles
+            if ~isempty(self.file_) ,
+                self.file_ = [] ;  % should close file handles
             end
         end            
         
@@ -87,44 +75,31 @@ classdef Model < handle
         end
         
         
-        function n_row=get.n_rows(self)
-            if isempty(self.file)
-                n_row=[];
+        function result = get.n_rows(self)
+            if isempty(self.file_)
+                result = [] ;
             else
-                n_row=self.file.n_row;
+                result = self.file_.n_row ;
             end
         end
         
         
-        function n_col=get.n_cols(self)
-            if isempty(self.file)
-                n_col=[];
+        function result = get.n_cols(self)
+            if isempty(self.file_)
+                result = [] ;
             else
-                n_col=self.file.n_col;
+                result = self.file_.n_col ;
             end
         end
         
         
-        function z_slice_count = get.z_slice_count(self)
-            if isempty(self.file) ,
-                z_slice_count = [] ;
+        function result = get.z_slice_count(self)
+            if isempty(self.file_) ,
+                result = [] ;
             else
-                z_slice_count = self.file.n_frame ;
+                result = self.file_.n_frame ;
             end
         end
-        
-        %     
-        %     function n_roi=get.n_rois(self)
-        %       n_roi=length(self.roi);
-        %     end
-        
-                
-        %     function sync_t(self)
-        %       t0=self.t0;
-        %       dt=self.dt;
-        %       n_z_slice=self.z_slice_count;
-        %       self.t=t0+dt*(0:(n_z_slice-1))';
-        %     end
         
         
         function set.fps(self, new_value)
@@ -132,75 +107,6 @@ classdef Model < handle
                 self.fps_ = double(new_value) ;
             end
         end       
-        
-        
-%         function z_slice = get_z_slice(self, i)
-%             z_slice=self.file.get_frame(i);
-%         end
-        
-        %     
-        %     function z_slice_overlay=get_z_slice_overlay(self,i)
-        %       if (1<=i) && (i<=self.overlay_file.z_slice_count)
-        %         z_slice_overlay=self.overlay_file.read_z_slice_overlay(i);
-        %       else
-        %         z_slice_overlay=cell(0,1);  % just return empty overlay
-        %       end
-        %     end
-        
-        %   Since we now are keeping the movie on-disk, mutating it becomes
-        %   more problematical...
-        %     function motion_correct(self)
-        %       border=2;  % border to ignore, seems to help with nans and such at the
-        %                  % edge of the z_slices
-        %       % find the translation for each z_slice
-        %       options=optimset('maxfunevals',1000);
-        %       z_slice_count=self.z_slice_count;
-        %       self.file.to_start();
-        %       if z_slice_count>0
-        %         z_slice_first=double(self.file.get_next());
-        %       end
-        %       b_per_z_slice=zeros(2,z_slice_count);
-        %       for k=2:z_slice_count
-        %         z_slice_this=double(self.file.get_next());
-        %         b_per_z_slice(:,k)=...
-        %           find_translation(z_slice_first, ...
-        %                            z_slice_this, ...
-        %                            border,...
-        %                            b_per_z_slice(:,k-1),...
-        %                            options);
-        %       end
-        %       % register each z_slice using the above-determined translation
-        %       for k=2:z_slice_count
-        %         % implicit conversion to the type of self.data
-        %         self.data(:,:,k)=register_z_slice(double(self.data(:,:,k)), ...
-        %                                         eye(2), ...
-        %                                         b_per_z_slice(:,k));
-        %       end
-        %     end  % motion_correct
-        
-        
-%         function [d_min, d_max] = min_max(self, i)
-%             % get the max and min values of z_slice i
-%             % d_min and d_max are doubles, regardless the type of self.data
-%             z_slice = double(self.get_z_slice(i)) ;
-%             d_min = min(min(z_slice)) ;
-%             d_max = max(max(z_slice)) ;
-%         end  % data_bounds
-        
-        %     function [h,t]=hist(self,i,n_bins)
-        %       % construct a histogram of the data values in z_slice i
-        %       z_slice=double(self.get_z_slice(i));
-        %       [h,t]=hist(z_slice(:),n_bins);
-        %     end
-        
-        %     function [h,t]=hist_abs(self,i,n_bins)
-        %       z_slice=double(self.get_z_slice(i));
-        %       z_slice=abs(z_slice);
-        %       [h,t]=hist(z_slice(:),n_bins);
-        %     end
-        
-        
-        
         
         
         function open_file_given_file_name(self,file_name)
@@ -214,42 +120,44 @@ classdef Model < handle
             file = lapwing.Stack_file(file_name) ;
                         
             % set the model
-            self.file=file;
-            self.file_name=file_name;
+            self.file_ = file ;
+            self.file_name_ = file_name ;
             
             % determine the colorbar bounds
-            [data_min,data_max] = lapwing.pixel_data_type_min_max(self.file.bits_per_pel) ;
-            self.colorbar_min_string=sprintf('%d',data_min);
-            self.colorbar_max_string=sprintf('%d',data_max);
-            self.colorbar_min=str2double(self.colorbar_min_string);
-            self.colorbar_max=str2double(self.colorbar_max_string);
+            [data_min,data_max] = lapwing.pixel_data_type_min_max(self.file_.bits_per_pel) ;
+            self.colorbar_min_string_ = sprintf('%d',data_min) ;
+            self.colorbar_max_string_ = sprintf('%d',data_max) ;
+            self.colorbar_min_ = str2double(self.colorbar_min_string) ;
+            self.colorbar_max_ = str2double(self.colorbar_max_string) ;
 
             % reset the z_slice index
-            self.z_index=1;
+            self.z_index_ = 1 ;
 
             % set the mode to zoom
-            self.mode = 'zoom' ;                        
+            self.mode_ = 'zoom' ;                        
         end  % method
         
         
         function close_file(self)
-            if ~isempty(self.file) ,
-                self.file = [] ;  % should close file handles
+            if ~isempty(self.file_) ,
+                self.file_ = [] ;  % should close file handles
             end
-            self.file_name = '' ;
+            self.file_name_ = '' ;
         end  % method
         
         
         function result = get.is_a_file_open(self)
-            result=~isempty(self.file);
+            result=~isempty(self.file_);
         end  % method
 
+        
         function result = get.z_slice(self)
             % Get the current indexed_z_slice, based on model, z_index,
             % colorbar_min, and colorbar_max.
-            z_index = self.z_index ;
-            result = self.file.get_frame(z_index) ;
+            z_index = self.z_index_ ;
+            result = self.file_.get_frame(z_index) ;
         end
+        
         
         function indexed_z_slice = get.indexed_z_slice(self)
             % Get the current indexed_z_slice, based on model, z_index,
@@ -259,6 +167,7 @@ classdef Model < handle
             cb_max = self.colorbar_max ;
             indexed_z_slice = uint8(round(255*(z_slice-cb_min)/(cb_max-cb_min))) ;
         end
+        
         
         function set_colorbar_bounds_from_strings(self, new_cb_min_string, new_cb_max_string)            
             % Set the view colorbar bounds given max and min values in strings.  No
@@ -280,15 +189,16 @@ classdef Model < handle
                     isfinite(new_cb_min) && isfinite(new_cb_max) && ...
                     (new_cb_max>new_cb_min) ,           
                 % store the strings
-                self.colorbar_min_string = new_cb_min_string ;
-                self.colorbar_max_string = new_cb_max_string ;
+                self.colorbar_min_string_ = new_cb_min_string ;
+                self.colorbar_max_string_ = new_cb_max_string ;
 
                 % store the numbers
-                self.colorbar_min = new_cb_min ;
-                self.colorbar_max = new_cb_max ;           
+                self.colorbar_min_ = new_cb_min ;
+                self.colorbar_max_ = new_cb_max ;           
             end
         end
 
+        
         function set_colorbar_bounds_from_numbers(self, new_cb_min, new_cb_max)            
             % Set the view colorbar bounds given max and min values as numbers.  This
             % calls self.set_colorbar_bounds_from_strings().  It is assumed that cb_min
@@ -303,18 +213,20 @@ classdef Model < handle
                 new_cb_max_string = sprintf('%d',new_cb_max) ;            
 
                 % store the strings
-                self.colorbar_min_string = new_cb_min_string ;
-                self.colorbar_max_string = new_cb_max_string ;
+                self.colorbar_min_string_ = new_cb_min_string ;
+                self.colorbar_max_string_ = new_cb_max_string ;
 
                 % store the numbers
-                self.colorbar_min = new_cb_min ;
-                self.colorbar_max = new_cb_max ;           
+                self.colorbar_min_ = new_cb_min ;
+                self.colorbar_max_ = new_cb_max ;           
             end
         end
+        
         
         function result = get.cmap_name(self) 
             result = self.cmap_name_ ;
         end
+        
         
         function set.cmap_name(self, new_cmap_name)
             % set the chosen cmap_name
@@ -324,36 +236,42 @@ classdef Model < handle
             self.cmap_ = lapwing.cmap_from_name(new_cmap_name) ;
         end        
         
+        
         function result = get.cmap(self) 
             result = self.cmap_ ;
         end
+        
         
         function brighten(self)            
             cmap = self.cmap_ ;
             self.cmap_ = brighten(cmap, 0.1) ;
         end
         
+        
         function revert_gamma(self)
             self.cmap_ = lapwing.cmap_from_name(self.cmap_name) ;
         end
+        
         
         function darken(self)
             cmap = self.cmap_ ;
             self.cmap_ = brighten(cmap, -0.1) ;
         end
 
-        function change_z_slice_abs(self, new_z_index)
+        
+        function set.z_index(self, new_value)
             % Change the current z_slice to the given z_slice index
             z_slice_count = self.z_slice_count ;
-            if (new_z_index>=1) && (new_z_index<=z_slice_count) ,
-                self.z_index = new_z_index ;
+            if (new_value>=1) && (new_value<=z_slice_count) ,
+                self.z_index_ = new_value ;
             end
         end
+        
         
         function set_colorbar_bounds(self, method, bounds)            
             switch(method)
                 case 'pixel_data_type_min_max'
-                    [d_min, d_max] = lapwing.pixel_data_type_min_max(self.file.bits_per_pel) ;
+                    [d_min, d_max] = lapwing.pixel_data_type_min_max(self.file_.bits_per_pel) ;
                     self.set_colorbar_bounds_from_numbers(d_min,d_max);
                 case 'min_max'
                     z_slice = double(self.z_slice) ;
@@ -390,6 +308,60 @@ classdef Model < handle
                     self.set_colorbar_bounds_from_numbers(new_cb_min, new_cb_max) ;
             end
         end  % method
+        
+        
+        function set.mode(self, new_value)
+            if isequal(new_value, 'zoom') ,
+                self.mode_ = 'zoom' ;
+            end
+        end
+        
+        
+        function result = get.mode(self)
+            result = self.mode_ ;
+        end
+        
+        
+        function result = get.file_name(self)
+            result = self.file_name_ ;
+        end
+        
+        
+        function result = get.colorbar_max_string(self)
+            result = self.colorbar_max_string_ ;
+        end
+        
+        
+        function result = get.colorbar_min_string(self)
+            result = self.colorbar_min_string_ ;
+        end
+
+        
+        function result = get.colorbar_max(self)
+            result = self.colorbar_max_ ;
+        end
+        
+        
+        function result = get.colorbar_min(self)
+            result = self.colorbar_min_ ;
+        end
+        
+        
+        function result = get.was_stop_button_hit(self)
+            result = self.was_stop_button_hit_ ;
+        end
+        
+
+        function set.was_stop_button_hit(self, new_value)
+            if (islogical(new_value) || isnumeric(new_value)) && isscalar(new_value) ,
+                self.was_stop_button_hit_ = logical(new_value) ;
+            end
+        end
+        
+        
+        function result = get.z_index(self)
+            result = self.z_index_ ;
+        end
         
     end  % methods
     
