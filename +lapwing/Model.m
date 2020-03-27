@@ -14,7 +14,7 @@ classdef Model < handle
     properties (SetAccess = private)
         %t0
         %dt
-        file_name  % the name of the video file currently open
+        file_name  % the name of the file currently open
         file  % the handle of a VideoFile object, the current file (or empty)
         
         % this holds the _playback_ z_slice rate, in z_slices/sec
@@ -211,7 +211,7 @@ classdef Model < handle
             %filename_local=[base_name ext];
             
             % load the optical data
-            file = lapwing.Video_file(file_name) ;
+            file = lapwing.Stack_file(file_name) ;
                         
             % set the model
             self.file=file;

@@ -1,11 +1,11 @@
-classdef Video_file_mj2 < handle
+classdef Stack_file_mj2 < handle
     
     properties
         vr_  % the VideoReader object
     end  % properties
         
     methods
-        function self=Video_file_mj2(file_name)
+        function self = Stack_file_mj2(file_name)
             self.vr_ = VideoReader(file_name) ;
         end  % constructor method
         

@@ -1,4 +1,4 @@
-classdef Video_file_normal_tif < handle
+classdef Stack_file_normal_tif < handle
     
     properties
         tiff_object_  % the file-type specific file object
@@ -12,7 +12,7 @@ classdef Video_file_normal_tif < handle
     end  % properties
         
     methods
-        function self=Video_file_normal_tif(file_name)
+        function self = Stack_file_normal_tif(file_name)
             info=imfinfo(file_name);
             self.n_frame_=length(info);
             self.original_libtiff_warning_state_ = warning('query', 'MATLAB:imagesci:tiffmexutils:libtiffWarning') ;
@@ -22,16 +22,16 @@ classdef Video_file_normal_tif < handle
             self.tiff_object_=Tiff(file_name,'r');
             frame=self.tiff_object_.read();
             if ndims(frame)>2  %#ok
-                error('Video_file:UnsupportedPixelType', ...
-                    'Video_file only supports 8- and 16-bit grayscale videos.');
+                error('Stack_file_normal_tif:UnsupportedPixelType', ...
+                      'Stack_file_normal_tif only supports 8- and 16-bit grayscale videos.');
             end
             if isa(frame,'uint8')
                 self.bits_per_pel_=8;
             elseif isa(frame,'uint16')
                 self.bits_per_pel_=16;
             else
-                error('Video_file:UnsupportedPixelType', ...
-                    'Video_file only supports 8- and 16-bit grayscale videos.');
+                error('Stack_file_normal_tif:UnsupportedPixelType', ...
+                      'Stack_file_normal_tif only supports 8- and 16-bit grayscale videos.');
             end
             [self.n_row_,self.n_col_]=size(frame);
             self.tiff_object_.close();

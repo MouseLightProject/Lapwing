@@ -1,4 +1,4 @@
-classdef Video_file_imagej_jumbo_tif < handle
+classdef Stack_file_imagej_jumbo_tif < handle
     
     properties
         header_length_  % in bytes
@@ -18,7 +18,7 @@ classdef Video_file_imagej_jumbo_tif < handle
     end  % properties
         
     methods
-        function self=Video_file_imagej_jumbo_tif(file_name)
+        function self = Stack_file_imagej_jumbo_tif(file_name)
             [tiff_struct, tiff_header] = lapwing.tiffread31_header(file_name) ;
             self.fid_ = tiff_struct.file ;
             tiff_tags = lapwing.tiffread31_readtags(tiff_struct, tiff_header, 1) ;
