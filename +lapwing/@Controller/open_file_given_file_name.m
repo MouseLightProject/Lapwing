@@ -43,7 +43,7 @@ function open_file_given_file_name(self, filename)
     end
     
     % Update the view HG objects to match the model & view state
-    self.model_changed();
+    self.update();
     
     % % set self
     % self.card_birth_roi_next=1;

@@ -33,6 +33,7 @@ classdef Controller < handle
         
         file_menu_h
         open_stack_menu_h
+        close_stack_menu_h
 %         open_rois_menu_h
 %         save_rois_to_file_menu_h
 %         export_to_tcs_menu_h
@@ -133,6 +134,9 @@ classdef Controller < handle
             % where the window appears causes an error at startup
             set(self.figure_h,'WindowButtonMotionFcn', ...
                 @(src,event)(self.update_pointer()));
+            
+            % Sync the views to the model
+            self.update() ;
             
             % load the data, if given an arg
             if nargin>=1 ,
@@ -441,8 +445,7 @@ classdef Controller < handle
             
             
             % restore fig units
-            set(self.figure_h,'units',units_before);
-            
+            set(self.figure_h,'units',units_before);            
         end
         
         function handle_z_index_edit(self)            
@@ -811,6 +814,11 @@ classdef Controller < handle
                 'Label','Open stack...',...
                 'Accelerator','o',...
                 'Callback',@(~,~)(self.choose_file_and_open()));
+            self.close_stack_menu_h= ...
+                uimenu(self.file_menu_h,...
+                'Label','Close stack',...
+                'Accelerator','w',...
+                'Callback',@(~,~)(self.close_file()));
 %             self.open_rois_menu_h= ...
 %                 uimenu(self.file_menu_h,...
 %                 'Label','Open ROI file...',...
