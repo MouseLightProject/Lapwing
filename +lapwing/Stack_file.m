@@ -7,26 +7,34 @@ classdef Stack_file < handle
     end  % properties
         
     methods
-        function self=Stack_file(file_name)
-            [~,~,ext] = fileparts(file_name) ;
-            switch ext ,
-                case '.tif' ,
-                    is_file_an_imagej_jumbo_tif = lapwing.is_file_an_imagej_jumbo_tif(file_name) ;
-                    if  is_file_an_imagej_jumbo_tif ,
-                        self.file_type_ = 'imagej_jumbo_tif' ;                        
-                        self.typed_file_ = lapwing.Stack_file_imagej_jumbo_tif(file_name) ;
-                    else
-                        self.file_type_ = 'tif' ;
-                        self.typed_file_ = lapwing.Stack_file_normal_tif(file_name) ;
-                    end
-                case '.mj2' ,
-                    self.file_type_ = 'mj2' ;
-                    self.typed_file_ = lapwing.Stack_file_mj2(file_name) ;
-                case '.h5' ,
-                    self.file_type_ = 'h5' ;
-                    self.typed_file_ = lapwing.Stack_file_h5(file_name) ;
-                otherwise
-                    error('Stack_file:UnableToLoad','Unable to load that file type');
+        function self = Stack_file(file_name_or_stack)
+            if ischar(file_name_or_stack) ,
+                file_name = file_name_or_stack ;
+                [~,~,ext] = fileparts(file_name) ;
+                switch ext ,
+                    case '.tif' ,
+                        is_file_an_imagej_jumbo_tif = lapwing.is_file_an_imagej_jumbo_tif(file_name) ;
+                        if  is_file_an_imagej_jumbo_tif ,
+                            self.file_type_ = 'imagej_jumbo_tif' ;                        
+                            self.typed_file_ = lapwing.Stack_file_imagej_jumbo_tif(file_name) ;
+                        else
+                            self.file_type_ = 'tif' ;
+                            self.typed_file_ = lapwing.Stack_file_normal_tif(file_name) ;
+                        end
+                    case '.mj2' ,
+                        self.file_type_ = 'mj2' ;
+                        self.typed_file_ = lapwing.Stack_file_mj2(file_name) ;
+                    case '.h5' ,
+                        self.file_type_ = 'h5' ;
+                        self.typed_file_ = lapwing.Stack_file_h5(file_name) ;
+                    otherwise
+                        error('Stack_file:UnableToLoad','Unable to load that file type');
+                end
+            elseif isnumeric(file_name_or_stack) || islogical(file_name_or_stack) ,
+                self.file_type_ = 'in-memory' ;
+                self.typed_file_ = lapwing.Stack_file_in_memory(file_name_or_stack) ;                
+            else
+                error('Stack_file:UnableToLoad', 'Unable to load a thing like that') ;
             end
             self.i_frame_ = 0 ;
         end  % constructor method

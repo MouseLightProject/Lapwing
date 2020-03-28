@@ -13,5 +13,5 @@ function choose_file_and_open(self)
     
     % Open the file
     file_name_full = fullfile(pathname, filename) ;
-    self.open_file_given_file_name(file_name_full) ;    
+    self.open_file_given_file_name_or_stack(file_name_full) ;    
 end

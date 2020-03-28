@@ -139,10 +139,10 @@ classdef Controller < handle
             self.update() ;
             
             % load the data, if given an arg
-            if nargin>=1 ,
-                if ischar(varargin{1}) ,
-                    file_name = varargin{1} ;
-                    self.open_file_given_file_name(file_name) ;
+            if nargin >= 1 ,
+                if ischar(varargin{1}) || isnumeric(varargin{1}) || islogical(varargin{1}) ,
+                    file_name_or_stack = varargin{1} ;
+                    self.open_file_given_file_name_or_stack(file_name_or_stack) ;
                 end
             end
         end  % constructor

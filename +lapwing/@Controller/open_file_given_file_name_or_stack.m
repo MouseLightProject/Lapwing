@@ -1,15 +1,19 @@
-function open_file_given_file_name(self, file_name)
+function open_file_given_file_name_or_stack(self, file_name_or_stack)
     
     % filename is a filename, can be relative or absolute
     
     % break up the file name
-    [~, base_name, ext] = fileparts(file_name) ;
-    filename_local = [base_name ext] ;
+    if ischar(file_name_or_stack) ,
+        [~, base_name, ext] = fileparts(file_name_or_stack) ;
+        filename_local = [base_name ext] ;
+    else
+        filename_local = 'in-memory stack' ;
+    end
     
     % load the optical data
     self.hourglass()
     try
-        self.model.open_file_given_file_name(file_name) ;
+        self.model.open_file_given_file_name_or_stack(file_name_or_stack) ;
     catch err
         self.unhourglass();
         if strcmp(err.identifier,'MATLAB:imagesci:imfinfo:whatFormat')

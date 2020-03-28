@@ -43,7 +43,7 @@ classdef Model < handle
     end
     
     methods
-        function self=Model()
+        function self = Model()
             self.file_name_ = '' ;
             self.file_ = [] ;
             self.z_index_ = [] ;
@@ -109,7 +109,7 @@ classdef Model < handle
         end       
         
         
-        function open_file_given_file_name(self,file_name)
+        function open_file_given_file_name_or_stack(self, file_name_or_stack)
             % filename is a filename, can be relative or absolute
             
             % break up the file name
@@ -117,11 +117,15 @@ classdef Model < handle
             %filename_local=[base_name ext];
             
             % load the optical data
-            file = lapwing.Stack_file(file_name) ;
+            file = lapwing.Stack_file(file_name_or_stack) ;
                         
             % set the model
             self.file_ = file ;
-            self.file_name_ = file_name ;
+            if ischar(file_name_or_stack) ,
+                self.file_name_ = file_name_or_stack ;
+            else
+                self.file_name_ = '(in-memory stack)' ;
+            end
             
             % determine the colorbar bounds
             [data_min,data_max] = lapwing.pixel_data_type_min_max(self.file_.data_type) ;
