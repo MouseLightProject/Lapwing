@@ -559,7 +559,7 @@ classdef Controller < handle
                 figure_height]);
             
             % Position the figure in the upper left, keeping the same size
-            position_in_upper_left_corner_of_primary_screen_bang(self.figure_h, screen_left_pad_size, screen_top_pad_size) ;
+            lapwing.position_in_upper_left_corner_of_primary_screen_bang(self.figure_h, screen_left_pad_size, screen_top_pad_size) ;
             
             % create the image figure
             set(self.figure_h, ...
