@@ -454,13 +454,7 @@ classdef Controller < handle
         function handle_z_index_edit(self)            
             new_z_index_string = get(self.z_index_edit_h,'String') ;
             new_z_index = str2double(new_z_index_string) ;
-            n_z_slices = self.model.z_slice_count ;
-            if (new_z_index>=1) && (new_z_index<=n_z_slices) ,
-                self.change_z_slice_abs(new_z_index) ;
-            else
-                set(self.z_index_edit_h, ...
-                    'String',sprintf('%d',self.z_index)) ;
-            end            
+            self.change_z_slice_abs(new_z_index) ;
         end
         
         function handle_colorbar_menus(self, tag)
